@@ -3,6 +3,14 @@ import plotly.graph_objects as go
 import pandas as pd
 from energy_dashboard import strip_unit_tup, resample_data, update_plot_style, load_data
 
+# Set page config
+st.set_page_config(
+    layout="wide",
+    page_title="Raw Overview",
+    initial_sidebar_state="expanded",
+    page_icon="⚡"
+)
+
 st.title("Raw Overview")
 
 # Load data

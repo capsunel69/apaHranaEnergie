@@ -3,6 +3,14 @@ import plotly.graph_objects as go
 import pandas as pd
 from energy_dashboard import load_data, update_plot_style
 
+# Set page config
+st.set_page_config(
+    layout="wide",
+    page_title="Intra-Week Analysis",
+    initial_sidebar_state="expanded",
+    page_icon="⚡"
+)
+
 st.title("Intra-Week Consumption")
 
 # Load data

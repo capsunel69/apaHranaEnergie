@@ -5,10 +5,22 @@ from plotly.subplots import make_subplots
 import pandas as pd
 from energy_dashboard import load_data, update_plot_style
 
+# Set page config
+st.set_page_config(
+    layout="wide",
+    page_title="Reactive Energy",
+    initial_sidebar_state="expanded",
+    page_icon="⚡"
+)
+
 st.title("Energy Analysis")
 
 # Load data
 tetarom_df = load_data()
+
+# Define limits
+limit_x1 = 0.4843  # 48.43%
+limit_x3 = 1.1691  # 116.91%
 
 # Station selector (single one for both plots)
 station = st.selectbox(
@@ -31,7 +43,13 @@ fig1.update_layout(
     height=500,
     xaxis_title="Time",
     yaxis_title="Energy",
-    hovermode='x unified'
+    hovermode='x unified',
+    legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01
+    )
 )
 fig1 = update_plot_style(fig1)
 # Calculate percentages
@@ -43,15 +61,33 @@ erpc = pd.DataFrame({
 
 fig2 = make_subplots(specs=[[{"secondary_y": True}]])
 
-# Add traces
+# Add traces for fig2
+# Split the data into above and below limit for ER+ %age
+mask_above = erpc['ER+ %age'] > limit_x1
 fig2.add_trace(
-    go.Scatter(x=erpc.index, y=erpc['ER+ %age'], name="ER+ %age", line=dict(width=2)),
+    go.Scatter(x=erpc[~mask_above].index, y=erpc[~mask_above]['ER+ %age'], 
+               name="ER+ %age (Normal)", line=dict(width=2, color='blue')),
     secondary_y=False
 )
 fig2.add_trace(
-    go.Scatter(x=erpc.index, y=erpc['ER- %age'], name="ER- %age", line=dict(width=2)),
+    go.Scatter(x=erpc[mask_above].index, y=erpc[mask_above]['ER+ %age'], 
+               name="ER+ %age (Above Limit)", line=dict(width=2, color='red')),
     secondary_y=False
 )
+
+# Split the data for ER- %age
+mask_above_negative = erpc['ER- %age'] > limit_x1
+fig2.add_trace(
+    go.Scatter(x=erpc[~mask_above_negative].index, y=erpc[~mask_above_negative]['ER- %age'], 
+               name="ER- %age (Normal)", line=dict(width=2, color='green')),
+    secondary_y=False
+)
+fig2.add_trace(
+    go.Scatter(x=erpc[mask_above_negative].index, y=erpc[mask_above_negative]['ER- %age'], 
+               name="ER- %age (Above Limit)", line=dict(width=2, color='red')),
+    secondary_y=False
+)
+
 fig2.add_trace(
     go.Scatter(x=erpc.index, y=erpc['EA'], name="EA", 
                line=dict(color='black', width=1), 
@@ -59,16 +95,22 @@ fig2.add_trace(
     secondary_y=True
 )
 
-# Add limit lines
-limit_x1 = 0.4843
-limit_x3 = 1.1691
-fig2.add_hline(y=limit_x1, line_dash="dash", line_color="gray", name="Limit x1")
-fig2.add_hline(y=limit_x3, line_dash="dash", line_color="black", name="Limit x3")
+# Add limit lines with names in legend
+fig2.add_hline(y=limit_x1, line_dash="dash", line_color="red", 
+               name="Limit x1 (0.4843)")
+fig2.add_hline(y=limit_x3, line_dash="dash", line_color="black", 
+               name="Limit x3 (1.1691)")
 
 fig2.update_layout(
     height=500,
     hovermode='x unified',
-    title=f"{station} Reactive Energy %age Usage"
+    title=f"{station} Reactive Energy %age Usage",
+    legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01
+    )
 )
 
 fig2.update_yaxes(title_text="Percentage", secondary_y=False)
