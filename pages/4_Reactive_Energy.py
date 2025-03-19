@@ -84,78 +84,45 @@ erpc = pd.DataFrame({
 fig2 = make_subplots(specs=[[{"secondary_y": True}]])
 
 # Add traces for fig2
-# Split the data into above and below limit for ER+ %age
-mask_above = erpc['ER+ %age'] > limit_x1
-
-# Create series with NaN values
-normal_erp = erpc['ER+ %age'].copy()
-above_erp = erpc['ER+ %age'].copy()
-
-# Find crossing points
-crosses_up = (erpc['ER+ %age'] > limit_x1) & (erpc['ER+ %age'].shift(1) <= limit_x1)
-crosses_down = (erpc['ER+ %age'] <= limit_x1) & (erpc['ER+ %age'].shift(1) > limit_x1)
-
-# Add limit points at crossings
-for cross_mask in [crosses_up, crosses_down]:
-    cross_points = erpc.index[cross_mask]
-    for point in cross_points:
-        # Insert a point exactly at the limit
-        normal_erp[point] = limit_x1
-        above_erp[point] = limit_x1
-
-# Set the rest of the values
-normal_erp[mask_above] = None
-above_erp[~mask_above] = None
-
+# Original ER+ line
 fig2.add_trace(
-    go.Scatter(x=normal_erp.index, y=normal_erp, 
-               name="ER+ %age (Normal)", line=dict(width=2, color=COLORS['ER+']),
-               connectgaps=False),
-    secondary_y=False
-)
-fig2.add_trace(
-    go.Scatter(x=above_erp.index, y=above_erp, 
-               name="ER+ %age (Above Limit)", line=dict(width=2, color='red'),
+    go.Scatter(x=erpc.index, y=erpc['ER+ %age'], 
+               name="ER+ %age", line=dict(width=2, color=COLORS['ER+']),
                connectgaps=False),
     secondary_y=False
 )
 
-# Split the data for ER- %age
-mask_above_negative = erpc['ER- %age'] > limit_x1
-
-# Create series with NaN values
-normal_ern = erpc['ER- %age'].copy()
-above_ern = erpc['ER- %age'].copy()
-
-# Find crossing points for ER-
-crosses_up_n = (erpc['ER- %age'] > limit_x1) & (erpc['ER- %age'].shift(1) <= limit_x1)
-crosses_down_n = (erpc['ER- %age'] <= limit_x1) & (erpc['ER- %age'].shift(1) > limit_x1)
-
-# Add limit points at crossings
-for cross_mask in [crosses_up_n, crosses_down_n]:
-    cross_points = erpc.index[cross_mask]
-    for point in cross_points:
-        # Insert a point exactly at the limit
-        normal_ern[point] = limit_x1
-        above_ern[point] = limit_x1
-
-# Set the rest of the values
-normal_ern[mask_above_negative] = None
-above_ern[~mask_above_negative] = None
-
+# Add the over-limit portion for ER+ as a line
+over_limit_erp = erpc['ER+ %age'].copy()
+over_limit_erp[erpc['ER+ %age'] <= limit_x1] = None  # Set under-limit values to None
 fig2.add_trace(
-    go.Scatter(x=normal_ern.index, y=normal_ern, 
-               name="ER- %age (Normal)", line=dict(width=2, color=COLORS['ER-']),
-               connectgaps=False),
-    secondary_y=False
-)
-fig2.add_trace(
-    go.Scatter(x=above_ern.index, y=above_ern, 
-               name="ER- %age (Above Limit)", line=dict(width=2, color='red'),
+    go.Scatter(x=erpc.index, y=over_limit_erp,
+               name="ER+ Over Limit", 
+               line=dict(width=2, color='red'),
                connectgaps=False),
     secondary_y=False
 )
 
+# Original ER- line
+fig2.add_trace(
+    go.Scatter(x=erpc.index, y=erpc['ER- %age'], 
+               name="ER- %age", line=dict(width=2, color=COLORS['ER-']),
+               connectgaps=False),
+    secondary_y=False
+)
+
+# Add the over-limit portion for ER- as a line
+over_limit_ern = erpc['ER- %age'].copy()
+over_limit_ern[erpc['ER- %age'] <= limit_x1] = None  # Set under-limit values to None
+fig2.add_trace(
+    go.Scatter(x=erpc.index, y=over_limit_ern,
+               name="ER- Over Limit", 
+               line=dict(width=2, color='red'),
+               connectgaps=False),
+    secondary_y=False
+)
+
+# Add EA trace
 fig2.add_trace(
     go.Scatter(x=erpc.index, y=erpc['EA'], name="EA", 
                line=dict(color=COLORS['EA'], width=1), 
