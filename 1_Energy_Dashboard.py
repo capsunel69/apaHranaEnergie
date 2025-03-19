@@ -115,7 +115,7 @@ st.markdown("""
 # Authentication function
 def authenticate(password):
     # Replace this with your desired password
-    correct_password = "energy2024"
+    correct_password = "energie2025!"
     if password == correct_password:
         st.session_state.authenticated = True
         # Store authentication status in URL parameters
