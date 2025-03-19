@@ -96,10 +96,30 @@ fig2.add_trace(
 )
 
 # Add limit lines with names in legend
-fig2.add_hline(y=limit_x1, line_dash="dash", line_color="red", 
-               name="Limit x1 (0.4843)")
-fig2.add_hline(y=limit_x3, line_dash="dash", line_color="black", 
-               name="Limit x3 (1.1691)")
+fig2.add_trace(
+    go.Scatter(
+        x=[None],
+        y=[None],
+        name="Limit x1 (0.4843)",
+        line=dict(color="red", dash="dash"),
+        showlegend=True,
+        legendgroup="limits"
+    )
+)
+fig2.add_trace(
+    go.Scatter(
+        x=[None],
+        y=[None],
+        name="Limit x3 (1.1691)",
+        line=dict(color="black", dash="dash"),
+        showlegend=True,
+        legendgroup="limits"
+    )
+)
+
+# Add the actual limit lines (without legend entries)
+fig2.add_hline(y=limit_x1, line_dash="dash", line_color="red", showlegend=False)
+fig2.add_hline(y=limit_x3, line_dash="dash", line_color="black", showlegend=False)
 
 fig2.update_layout(
     height=500,
@@ -109,7 +129,8 @@ fig2.update_layout(
         yanchor="top",
         y=0.99,
         xanchor="left",
-        x=0.01
+        x=0.01,
+        title_text="Data Series"
     )
 )
 
