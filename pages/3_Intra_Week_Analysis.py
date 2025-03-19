@@ -71,8 +71,8 @@ n_periods = len(pattern.columns)
 
 # Add a line for each period in reverse order
 for idx, column in enumerate(reversed(pattern.columns)):
-    # Calculate opacity - newer dates will be more visible
-    opacity = 0.08 + (0.92 * idx / (n_periods - 1))
+    # Calculate opacity - older dates will be less visible
+    opacity = 1 - (0.92 * idx / (n_periods - 1))  # Changed opacity calculation
     fig4.add_trace(
         go.Scatter(
             x=pattern.index.total_seconds()/3600/24,
