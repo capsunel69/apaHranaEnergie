@@ -11,33 +11,43 @@ st.set_page_config(
     page_icon="⚡"
 )
 
-st.title("Raw Overview")
+# Create placeholder for the title
+title_placeholder = st.empty()
+title_placeholder.title("Raw Overview")
 
-# Load data
-tetarom_df = load_data()
+# Create placeholder for the main content
+main_placeholder = st.empty()
 
-# Controls in a container above the plot
-with st.container():
-    resample_period = st.segmented_control(
-        "Aggregation Period",
-        options=["Day (6H)", "Week", "Month"],
-        default="Day (6H)"
-    )
+with st.spinner('Loading and processing data...'):
+    import time
+    time.sleep(1)  # Increased delay to ensure visibility
 
-# Convert MultiIndex DataFrame to regular DataFrame with flattened column names
-flat_df = tetarom_df.copy()
-flat_df.columns = [f"{col[0]} - {col[1]}" for col in tetarom_df.columns]
+    # Load data
+    tetarom_df = load_data()
 
-# Apply resampling
-resampled_df = resample_data(flat_df, resample_period)
+    # Convert MultiIndex DataFrame to regular DataFrame with flattened column names
+    flat_df = tetarom_df.copy()
+    flat_df.columns = [f"{col[0]} - {col[1]}" for col in tetarom_df.columns]
 
-# Add unit selection
-with st.container():
-    unit = st.segmented_control(
-        "Unit",
-        options=["kWh", "MWh"],
-        default="MWh"
-    )
+    # Prepare all the data and create the figure
+    with main_placeholder.container():
+        # Controls in a container above the plot
+        resample_period = st.segmented_control(
+            "Aggregation Period",
+            options=["Day (6H)", "Week", "Month"],
+            default="Day (6H)"
+        )
+
+        # Apply resampling
+        resampled_df = resample_data(flat_df, resample_period)
+
+        # Add unit selection
+        with st.container():
+            unit = st.segmented_control(
+                "Unit",
+                options=["kWh", "MWh"],
+                default="MWh"
+            )
 
 # Convert to MWh only if selected
 if unit == "MWh":
