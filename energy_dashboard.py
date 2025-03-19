@@ -152,14 +152,21 @@ fig1.update_layout(
     hovermode='x unified',
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
-    title=f"Energy Consumption Overview ({resample_period}ly)",
+    title=dict(
+        text=f"Energy Consumption Overview ({resample_period}ly)",
+        y=0.98,
+        x=0.5,
+        xanchor='center',
+        yanchor='top'
+    ),
+    margin=dict(l=50, r=20, t=80, b=20),
     legend=dict(
         yanchor="top",
         y=0.99,
         xanchor="left",
         x=0.01,
         bgcolor='rgba(255,255,255,0.8)',
-        groupclick="toggleitem"  # Allows clicking individual traces within groups
+        groupclick="toggleitem"
     )
 )
 
@@ -246,13 +253,20 @@ for column in pattern.columns:
     )
 
 fig4.update_layout(
-    title=f"Intra-Week Consumption Pattern - {intra_week_station} (by {aggregation_period})",
+    title=dict(
+        text=f"Intra-Week Consumption Pattern - {intra_week_station} (by {aggregation_period})",
+        y=0.98,
+        x=0.5,
+        xanchor='center',
+        yanchor='top'
+    ),
     height=600,
     xaxis_title="Day of Week",
     yaxis_title="Energy Consumption (kWh)",
     hovermode='x unified',
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
+    margin=dict(l=50, r=20, t=80, b=20),
     legend=dict(
         title=f"{aggregation_period}",
         yanchor="top",
@@ -285,14 +299,11 @@ st.plotly_chart(fig4, use_container_width=True)
 #3RD POSITION
 st.header("Reactive Energy Usage")
 
-# Station selector in a container above the plot
-with st.container():
-    st.markdown('<div class="filter-container">', unsafe_allow_html=True)
-    station = st.selectbox(
-        "Select Station",
-        tetarom_df.columns.get_level_values('location').unique()
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+# Station selector
+station = st.selectbox(
+    "Select Station",
+    tetarom_df.columns.get_level_values('location').unique()
+)
 
 # Filter data for selected station (using original non-resampled data)
 df = tetarom_df.loc[:, pd.IndexSlice[:, station]].copy().droplevel('location', axis=1)
@@ -301,7 +312,7 @@ df = df[['EA', 'ER+', 'ER-']]
 
 # Station consumption plot (no resampling)
 fig2 = px.line(df,
-               title=f"{station} Energy Consumption",  # Removed resampling period from title
+               title=f"{station} Energy Consumption",
                template="plotly_white")
 fig2.update_layout(
     height=600,
@@ -311,6 +322,14 @@ fig2.update_layout(
     hovermode='x unified',
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
+    title=dict(
+        text=f"{station} Energy Consumption",
+        y=0.98,
+        x=0.5,
+        xanchor='center',
+        yanchor='top'
+    ),
+    margin=dict(l=50, r=20, t=80, b=20),
     legend=dict(
         yanchor="top",
         y=0.99,
@@ -367,12 +386,19 @@ fig3.add_hline(y=limit_x3,
                name="Limit x3")
 
 fig3.update_layout(
-    title=f"{station} Reactive Energy Percentage",
+    title=dict(
+        text=f"{station} Reactive Energy Percentage",
+        y=0.98,
+        x=0.5,
+        xanchor='center',
+        yanchor='top'
+    ),
     height=600,
     hovermode='x unified',
     template="plotly_white",
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
+    margin=dict(l=50, r=20, t=80, b=20),
     legend=dict(
         yanchor="top",
         y=0.99,
