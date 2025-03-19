@@ -26,32 +26,9 @@ def resample_data(df, period):
         return df.resample('M').sum()
 
 # Set page config
-st.set_page_config(layout="wide", page_title="Energy Dashboard")
+st.set_page_config(layout="wide", page_title="Energy Dashboard", initial_sidebar_state="expanded")
 
 # Custom CSS for better aesthetics
-st.markdown("""
-    <style>
-    .main {
-        padding: 2rem;
-    }
-    .stPlotlyChart {
-        background-color: white;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    h1, h2 {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    .filter-container {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 5px;
-        margin-bottom: 1rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    </style>
-""", unsafe_allow_html=True)
 
 st.title("Energy Consumption Dashboard")
 
@@ -185,6 +162,33 @@ fig1.update_traces(
     hovertemplate="%{y:,.1f} " + unit + "<br>%{x}<extra></extra>"
 )
 
+# Update plot styling function to be mode-agnostic
+def update_plot_style(fig):
+    fig.update_layout(
+        font_family="sans-serif",
+        title_font_size=20,
+        margin=dict(l=50, r=20, t=80, b=20),
+        legend=dict(
+            borderwidth=1,
+            font=dict(size=10)
+        )
+    )
+    fig.update_xaxes(
+        gridcolor='rgba(128,128,128,0.1)',
+        linewidth=1,
+        ticks="outside"
+    )
+    fig.update_yaxes(
+        gridcolor='rgba(128,128,128,0.1)',
+        linewidth=1,
+        ticks="outside"
+    )
+    return fig
+
+# Apply the styling to each figure
+# For fig1:
+fig1 = update_plot_style(fig1)
+
 st.plotly_chart(fig1, use_container_width=True)
 
 # Move Intra-week consumption here (second)
@@ -294,6 +298,9 @@ fig4.update_yaxes(
     ticksuffix=" kWh"
 )
 
+# Apply the styling to fig4
+fig4 = update_plot_style(fig4)
+
 st.plotly_chart(fig4, use_container_width=True)
 
 #3RD POSITION
@@ -340,6 +347,10 @@ fig2.update_layout(
 )
 fig2.update_xaxes(gridcolor='rgba(128,128,128,0.1)', zeroline=False)
 fig2.update_yaxes(gridcolor='rgba(128,128,128,0.1)', zeroline=False)
+
+# Apply the styling to fig2
+fig2 = update_plot_style(fig2)
+
 st.plotly_chart(fig2, use_container_width=True)
 
 # Reactive Energy Analysis moves to fourth position
@@ -412,5 +423,8 @@ fig3.update_xaxes(gridcolor='rgba(128,128,128,0.1)', zeroline=False)
 fig3.update_yaxes(gridcolor='rgba(128,128,128,0.1)', zeroline=False)
 fig3.update_yaxes(title_text="Percentage", secondary_y=False)
 fig3.update_yaxes(title_text="EA", secondary_y=True)
+
+# Apply the styling to fig3
+fig3 = update_plot_style(fig3)
 
 st.plotly_chart(fig3, use_container_width=True)
