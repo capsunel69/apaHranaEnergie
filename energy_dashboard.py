@@ -330,7 +330,7 @@ elif nav_selection == "Intra-Week Consumption":
     
     # Add a line for each period in reverse order (older to newer)
     for idx, column in enumerate(reversed(pattern.columns)):
-        opacity = 0.15 + (0.85 * idx / (n_periods - 1))  # Scale from 0.15 to 1.0
+        opacity = 0.08 + (0.92 * idx / (n_periods - 1))  # More dramatic opacity range
         fig4.add_trace(
             go.Scatter(
                 x=pattern.index.total_seconds()/3600/24,
@@ -338,15 +338,20 @@ elif nav_selection == "Intra-Week Consumption":
                 name=column.strftime('%Y-%m') if aggregation_period == "Month" else column.strftime('%Y-%m-%d'),
                 mode='lines',
                 line=dict(
-                    width=1,
-                    color=f'rgba(255, 127, 14, {opacity})'  # Orange with varying opacity
-                )
+                    width=1.5,  # Slightly thicker lines
+                    color=f'rgba(255, 127, 14, {opacity})',  # Orange with varying opacity
+                    shape='spline',  # Smooth curves
+                    smoothing=0.3    # Moderate smoothing
+                ),
+                hovertemplate='%{y:.1f} kWh<br>%{text}<extra></extra>',
+                text=[column.strftime('%Y-%m') if aggregation_period == "Month" else column.strftime('%Y-%m-%d')] * len(pattern.index)
             )
         )
 
+    # Update layout for better readability
     fig4.update_layout(
         title=dict(
-            text=f"Intra-Week Consumption Pattern - {intra_week_station} (by {aggregation_period})",
+            text=f"Intra-Week Consumption Pattern - {intra_week_station}",
             y=0.98,
             x=0.5,
             xanchor='center',
@@ -363,27 +368,32 @@ elif nav_selection == "Intra-Week Consumption":
             title=f"{aggregation_period}",
             yanchor="top",
             y=0.99,
-            xanchor="left",
-            x=0.01,
-            bgcolor='rgba(255,255,255,0.8)',
+            xanchor="right",  # Moved to right side
+            x=0.99,
+            bgcolor='rgba(255,255,255,0.9)',
+            bordercolor='rgba(0,0,0,0.1)',
+            borderwidth=1,
             font=dict(size=8)
         ),
         showlegend=True
     )
 
-    # Update x-axis to show day names
+    # Update x-axis to show day names with better formatting
     fig4.update_xaxes(
         gridcolor='rgba(128,128,128,0.1)',
         zeroline=False,
-        ticktext=['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        ticktext=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
         tickvals=[0, 1, 2, 3, 4, 5, 6],
-        tickmode='array'
+        tickmode='array',
+        tickangle=0,
+        showgrid=True
     )
 
     fig4.update_yaxes(
         gridcolor='rgba(128,128,128,0.1)',
         zeroline=False,
-        ticksuffix=" kWh"
+        ticksuffix=" kWh",
+        showgrid=True
     )
 
     # Apply the styling to fig4
