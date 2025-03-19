@@ -34,7 +34,21 @@ def update_plot_style(fig):
         legend=dict(
             borderwidth=1,
             font=dict(size=10)
-        )
+        ),
+        # Modebar styling
+        modebar=dict(
+            bgcolor='rgba(0,0,0,0)',  # transparent background
+            color='#2c3e50',          # darker icons
+            activecolor='#1f77b4'     # blue when active
+        ),
+        modebar_remove=[             # remove unnecessary buttons
+            'select2d', 
+            'lasso2d', 
+            'autoScale2d',
+            'hoverCompareCartesian'
+        ],
+        modebar_orientation='v',     # vertical orientation
+        modebar_add=['hoverclosest'] # add useful hover mode
     )
     fig.update_xaxes(
         gridcolor='rgba(128,128,128,0.1)',
