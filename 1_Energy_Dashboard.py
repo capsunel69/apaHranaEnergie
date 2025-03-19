@@ -1,5 +1,10 @@
 import streamlit as st
 from energy_dashboard import load_data
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Set page config
 st.set_page_config(
@@ -114,8 +119,12 @@ st.markdown("""
 
 # Authentication function
 def authenticate(password):
-    # Replace this with your desired password
-    correct_password = "energie2025!"
+    # Get password from environment variable
+    correct_password = os.getenv('DASHBOARD_PASSWORD')
+    if not correct_password:
+        st.error("Error: Dashboard password not configured in environment variables")
+        return False
+    
     if password == correct_password:
         st.session_state.authenticated = True
         # Store authentication status in URL parameters
