@@ -84,43 +84,101 @@ erpc = pd.DataFrame({
 fig2 = make_subplots(specs=[[{"secondary_y": True}]])
 
 # Add traces for fig2
-# Original ER+ line
-fig2.add_trace(
-    go.Scatter(x=erpc.index, y=erpc['ER+ %age'], 
-               name="ER+ %age", line=dict(width=2, color=COLORS['ER+']),
-               connectgaps=False),
-    secondary_y=False
-)
+# ER+ line with color segments based on limit
+erp_segments = []
+erp_dates = []
+erp_colors = []
+current_segment = []
+current_dates = []
 
-# Add the over-limit portion for ER+ as a line
-over_limit_erp = erpc['ER+ %age'].copy()
-over_limit_erp[erpc['ER+ %age'] <= limit_x1] = None  # Set under-limit values to None
-fig2.add_trace(
-    go.Scatter(x=erpc.index, y=over_limit_erp,
-               name="ER+ Over Limit", 
-               line=dict(width=2, color='red'),
-               connectgaps=False),
-    secondary_y=False
-)
+for date, value in erpc['ER+ %age'].items():
+    if pd.isna(value):  # Handle NaN values
+        if current_segment:
+            erp_segments.append(current_segment)
+            erp_dates.append(current_dates)
+            erp_colors.append('red' if current_segment[-1] > limit_x1 else COLORS['ER+'])
+            current_segment = []
+            current_dates = []
+        continue
+        
+    current_segment.append(value)
+    current_dates.append(date)
+    
+    if len(current_segment) > 1:
+        if (current_segment[-1] > limit_x1) != (current_segment[-2] > limit_x1):
+            # Include the transition point in both segments
+            erp_segments.append(current_segment)
+            erp_dates.append(current_dates)
+            erp_colors.append('red' if current_segment[-2] > limit_x1 else COLORS['ER+'])
+            current_segment = [current_segment[-1]]  # Start new segment with transition point
+            current_dates = [current_dates[-1]]  # Start new dates with transition point
 
-# Original ER- line
-fig2.add_trace(
-    go.Scatter(x=erpc.index, y=erpc['ER- %age'], 
-               name="ER- %age", line=dict(width=2, color=COLORS['ER-']),
-               connectgaps=False),
-    secondary_y=False
-)
+if current_segment:
+    erp_segments.append(current_segment)
+    erp_dates.append(current_dates)
+    erp_colors.append('red' if current_segment[-1] > limit_x1 else COLORS['ER+'])
 
-# Add the over-limit portion for ER- as a line
-over_limit_ern = erpc['ER- %age'].copy()
-over_limit_ern[erpc['ER- %age'] <= limit_x1] = None  # Set under-limit values to None
-fig2.add_trace(
-    go.Scatter(x=erpc.index, y=over_limit_ern,
-               name="ER- Over Limit", 
-               line=dict(width=2, color='red'),
-               connectgaps=False),
-    secondary_y=False
-)
+for segment, dates, color in zip(erp_segments, erp_dates, erp_colors):
+    fig2.add_trace(
+        go.Scatter(
+            x=dates,
+            y=segment,
+            name="ER+ %age",
+            line=dict(width=2, color=color),
+            mode='lines',  # Only show lines, no markers
+            showlegend=(color == COLORS['ER+']),
+            connectgaps=False
+        ),
+        secondary_y=False
+    )
+
+# ER- line with color segments (similar logic)
+ern_segments = []
+ern_dates = []
+ern_colors = []
+current_segment = []
+current_dates = []
+
+for date, value in erpc['ER- %age'].items():
+    if pd.isna(value):
+        if current_segment:
+            ern_segments.append(current_segment)
+            ern_dates.append(current_dates)
+            ern_colors.append('red' if current_segment[-1] > limit_x1 else COLORS['ER-'])
+            current_segment = []
+            current_dates = []
+        continue
+        
+    current_segment.append(value)
+    current_dates.append(date)
+    
+    if len(current_segment) > 1:
+        if (current_segment[-1] > limit_x1) != (current_segment[-2] > limit_x1):
+            # Include the transition point in both segments
+            ern_segments.append(current_segment)
+            ern_dates.append(current_dates)
+            ern_colors.append('red' if current_segment[-2] > limit_x1 else COLORS['ER-'])
+            current_segment = [current_segment[-1]]  # Start new segment with transition point
+            current_dates = [current_dates[-1]]  # Start new dates with transition point
+
+if current_segment:
+    ern_segments.append(current_segment)
+    ern_dates.append(current_dates)
+    ern_colors.append('red' if current_segment[-1] > limit_x1 else COLORS['ER-'])
+
+for segment, dates, color in zip(ern_segments, ern_dates, ern_colors):
+    fig2.add_trace(
+        go.Scatter(
+            x=dates,
+            y=segment,
+            name="ER- %age",
+            line=dict(width=2, color=color),
+            mode='lines',  # Only show lines, no markers
+            showlegend=(color == COLORS['ER-']),
+            connectgaps=False
+        ),
+        secondary_y=False
+    )
 
 # Add EA trace
 fig2.add_trace(
