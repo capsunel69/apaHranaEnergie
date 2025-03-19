@@ -31,13 +31,31 @@ def resample_data(df, period):
         return df.resample('M').sum()
 
 def update_plot_style(fig, color_map=COLORS):
+    # Check if dark mode is enabled by checking the background color
+    is_dark_mode = st.get_option("theme.backgroundColor") == "#0E1117"
+    
+    # Set legend background and text color based on theme
+    # For dark mode: very dark background with 0.9 opacity, white text
+    # For light mode: white background with 0.8 opacity, black text
+    legend_bgcolor = 'rgba(15,15,15,0.9)' if is_dark_mode else 'rgba(255,255,255,0.8)'
+    legend_font_color = '#FFFFFF' if is_dark_mode else '#000000'
+    
     fig.update_layout(
         font_family="sans-serif",
         title_font_size=20,
         margin=dict(l=50, r=20, t=80, b=20),
         legend=dict(
             borderwidth=1,
-            font=dict(size=10)
+            font=dict(
+                size=10,
+                color=legend_font_color
+            ),
+            title=dict(
+                font=dict(
+                    color=legend_font_color
+                )
+            ),
+            bgcolor=legend_bgcolor
         ),
         modebar=dict(
             bgcolor='rgba(0,0,0,0)',

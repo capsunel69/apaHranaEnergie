@@ -9,7 +9,7 @@ st.set_page_config(
     page_icon="⚡"
 )
 
-# Add custom CSS for improved styling
+# Add custom CSS for improved styling with dark mode support
 st.markdown("""
     <style>
     /* Main content styling */
@@ -20,32 +20,32 @@ st.markdown("""
     /* Header styling */
     .stTitle {
         font-size: 2.5rem !important;
-        color: #1E3D59 !important;
+        color: var(--text-color) !important;
         padding-bottom: 1rem;
-        border-bottom: 2px solid #f0f2f6;
+        border-bottom: 2px solid var(--secondary-background-color);
         margin-bottom: 2rem;
     }
     
     /* Sidebar styling */
     .sidebar .sidebar-content {
-        background-color: #f8f9fa;
+        background-color: var(--secondary-background-color);
         padding: 1.5rem;
     }
     
     .sidebar-text {
         padding: 1.5rem;
-        background-color: white;
+        background-color: var(--secondary-background-color);
         border-radius: 0.8rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         margin-bottom: 1.5rem;
     }
     
     /* Card-like container for welcome message */
     .welcome-container {
         padding: 2rem;
-        background-color: white;
+        background-color: var(--secondary-background-color);
         border-radius: 1rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         margin-bottom: 2rem;
     }
     
@@ -57,7 +57,16 @@ st.markdown("""
     
     .feature-item {
         margin-bottom: 0.8rem;
-        color: #2C3E50;
+        color: var(--text-color);
+    }
+    
+    /* Text colors using theme variables */
+    .welcome-container h2 {
+        color: var(--text-color) !important;
+    }
+    
+    .welcome-container p {
+        color: var(--text-color) !important;
     }
     </style>
 """, unsafe_allow_html=True)
