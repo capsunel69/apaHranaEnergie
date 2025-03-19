@@ -117,7 +117,13 @@ fig4.update_layout(
         borderwidth=1,
         font=dict(size=8)
     ),
-    showlegend=True
+    showlegend=True,
+    xaxis=dict(
+        rangeslider=dict(
+            visible=True,
+            yaxis=dict(rangemode="auto")
+        )
+    )
 )
 
 # Update axes

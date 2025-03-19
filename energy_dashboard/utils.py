@@ -1,6 +1,15 @@
 import pandas as pd
 import streamlit as st
 
+COLORS = {
+    'EA+': '#1f77b4',     # blue
+    'EA-': '#ff7f0e',     # orange
+    'ER+': '#2ca02c',      # green
+    'Total': '#d62728',     # red
+    'ER-': '#9467bd',     # purple
+    'EA': '#1f77b4'    # blue
+}
+
 def strip_unit(a):
     if a.endswith('[kWh]'):
         a = a[:-5]
@@ -21,7 +30,7 @@ def resample_data(df, period):
     else:  # Month
         return df.resample('M').sum()
 
-def update_plot_style(fig):
+def update_plot_style(fig, color_map=COLORS):
     fig.update_layout(
         font_family="sans-serif",
         title_font_size=20,
@@ -44,6 +53,13 @@ def update_plot_style(fig):
         modebar_orientation='v',
         modebar_add=['hoverclosest']
     )
+    
+    for trace in fig.data:
+        if trace.name in color_map:
+            trace.line.color = color_map[trace.name]
+            if hasattr(trace, 'marker'):
+                trace.marker.color = color_map[trace.name]
+    
     fig.update_xaxes(
         gridcolor='rgba(128,128,128,0.1)',
         linewidth=1,

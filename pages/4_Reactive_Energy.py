@@ -3,7 +3,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-from energy_dashboard import load_data, update_plot_style
+from energy_dashboard import load_data, update_plot_style, COLORS
 
 # Set page config
 st.set_page_config(
@@ -50,8 +50,29 @@ fig1.update_layout(
         y=0.99,
         xanchor="left",
         x=0.01
+    ),
+    xaxis=dict(
+        rangeslider=dict(
+            visible=True,
+            yaxis=dict(rangemode="auto")
+        ),
+        type="date"
     )
 )
+
+# Add traces to the rangeslider
+for column in df.columns:
+    fig1.add_trace(
+        go.Scatter(
+            x=df.index,
+            y=df[column],
+            name=column,
+            showlegend=False,
+            xaxis='x',
+            yaxis='y2'
+        )
+    )
+
 fig1 = update_plot_style(fig1)
 # Calculate percentages
 erpc = pd.DataFrame({
@@ -88,7 +109,7 @@ above_erp[~mask_above] = None
 
 fig2.add_trace(
     go.Scatter(x=normal_erp.index, y=normal_erp, 
-               name="ER+ %age (Normal)", line=dict(width=2, color='blue'),
+               name="ER+ %age (Normal)", line=dict(width=2, color=COLORS['ER+']),
                connectgaps=False),
     secondary_y=False
 )
@@ -124,7 +145,7 @@ above_ern[~mask_above_negative] = None
 
 fig2.add_trace(
     go.Scatter(x=normal_ern.index, y=normal_ern, 
-               name="ER- %age (Normal)", line=dict(width=2, color='green'),
+               name="ER- %age (Normal)", line=dict(width=2, color=COLORS['ER-']),
                connectgaps=False),
     secondary_y=False
 )
@@ -137,7 +158,7 @@ fig2.add_trace(
 
 fig2.add_trace(
     go.Scatter(x=erpc.index, y=erpc['EA'], name="EA", 
-               line=dict(color='black', width=1), 
+               line=dict(color=COLORS['EA'], width=1), 
                opacity=0.1),
     secondary_y=True
 )
@@ -178,6 +199,10 @@ fig2.update_layout(
         xanchor="left",
         x=0.01,
         title_text="Data Series"
+    ),
+    xaxis=dict(
+        rangeslider=dict(visible=True),
+        type="date"
     )
 )
 

@@ -157,6 +157,10 @@ fig1.update_layout(
         x=0.01,
         bgcolor='rgba(255,255,255,0.8)',
         groupclick="toggleitem"
+    ),
+    xaxis=dict(
+        rangeslider=dict(visible=True),
+        type="date"
     )
 )
 
