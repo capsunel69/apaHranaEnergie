@@ -64,27 +64,57 @@ fig2 = make_subplots(specs=[[{"secondary_y": True}]])
 # Add traces for fig2
 # Split the data into above and below limit for ER+ %age
 mask_above = erpc['ER+ %age'] > limit_x1
+
+# Create series with NaN values at transition points
+normal_erp = erpc['ER+ %age'].copy()
+above_erp = erpc['ER+ %age'].copy()
+
+normal_erp[mask_above] = None
+above_erp[~mask_above] = None
+
+# Add transition points (NaN values)
+transitions = mask_above != mask_above.shift()
+normal_erp[transitions] = None
+above_erp[transitions] = None
+
 fig2.add_trace(
-    go.Scatter(x=erpc[~mask_above].index, y=erpc[~mask_above]['ER+ %age'], 
-               name="ER+ %age (Normal)", line=dict(width=2, color='blue')),
+    go.Scatter(x=normal_erp.index, y=normal_erp, 
+               name="ER+ %age (Normal)", line=dict(width=2, color='blue'),
+               connectgaps=False),
     secondary_y=False
 )
 fig2.add_trace(
-    go.Scatter(x=erpc[mask_above].index, y=erpc[mask_above]['ER+ %age'], 
-               name="ER+ %age (Above Limit)", line=dict(width=2, color='red')),
+    go.Scatter(x=above_erp.index, y=above_erp, 
+               name="ER+ %age (Above Limit)", line=dict(width=2, color='red'),
+               connectgaps=False),
     secondary_y=False
 )
 
 # Split the data for ER- %age
 mask_above_negative = erpc['ER- %age'] > limit_x1
+
+# Create series with NaN values at transition points
+normal_ern = erpc['ER- %age'].copy()
+above_ern = erpc['ER- %age'].copy()
+
+normal_ern[mask_above_negative] = None
+above_ern[~mask_above_negative] = None
+
+# Add transition points (NaN values)
+transitions_negative = mask_above_negative != mask_above_negative.shift()
+normal_ern[transitions_negative] = None
+above_ern[transitions_negative] = None
+
 fig2.add_trace(
-    go.Scatter(x=erpc[~mask_above_negative].index, y=erpc[~mask_above_negative]['ER- %age'], 
-               name="ER- %age (Normal)", line=dict(width=2, color='green')),
+    go.Scatter(x=normal_ern.index, y=normal_ern, 
+               name="ER- %age (Normal)", line=dict(width=2, color='green'),
+               connectgaps=False),
     secondary_y=False
 )
 fig2.add_trace(
-    go.Scatter(x=erpc[mask_above_negative].index, y=erpc[mask_above_negative]['ER- %age'], 
-               name="ER- %age (Above Limit)", line=dict(width=2, color='red')),
+    go.Scatter(x=above_ern.index, y=above_ern, 
+               name="ER- %age (Above Limit)", line=dict(width=2, color='red'),
+               connectgaps=False),
     secondary_y=False
 )
 
