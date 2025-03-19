@@ -325,15 +325,22 @@ elif nav_selection == "Intra-Week Consumption":
     # Create the plot
     fig4 = go.Figure()
 
-    # Add a line for each period
-    for column in pattern.columns:
+    # Calculate color intensities based on chronological order
+    n_periods = len(pattern.columns)
+    
+    # Add a line for each period in reverse order (older to newer)
+    for idx, column in enumerate(reversed(pattern.columns)):
+        opacity = 0.15 + (0.85 * idx / (n_periods - 1))  # Scale from 0.15 to 1.0
         fig4.add_trace(
             go.Scatter(
                 x=pattern.index.total_seconds()/3600/24,
                 y=pattern[column],
                 name=column.strftime('%Y-%m') if aggregation_period == "Month" else column.strftime('%Y-%m-%d'),
                 mode='lines',
-                line=dict(width=1)
+                line=dict(
+                    width=1,
+                    color=f'rgba(255, 127, 14, {opacity})'  # Orange with varying opacity
+                )
             )
         )
 
