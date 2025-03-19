@@ -65,16 +65,72 @@ def update_plot_style(fig):
 # Set page config
 st.set_page_config(layout="wide", page_title="Energy Dashboard", initial_sidebar_state="expanded")
 
-# Add sidebar navigation
+# Add custom CSS for sidebar styling
+st.markdown("""
+    <style>
+    .sidebar .sidebar-content {
+        background-color: #f8f9fa;
+    }
+    .sidebar-text {
+        padding: 1rem;
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Enhanced sidebar navigation
 with st.sidebar:
     st.title("Navigation")
+    
+    # Add a brief description
+    st.markdown("""
+        <div class='sidebar-text'>
+        Explore different aspects of energy consumption data through various visualizations.
+        Select a view below to get started.
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Add some spacing
+    st.markdown("---")
+    
+    # Navigation options with descriptions
+    nav_options = {
+        "Raw Overview": {
+            "desc": "View raw energy consumption data"
+        },
+        "Intra-Week Consumption": {
+            "desc": "Analyze consumption patterns within weeks"
+        },
+        "Reactive Energy Usage": {
+            "desc": "Monitor reactive energy consumption"
+        },
+        "Reactive Energy %age Usage": {
+            "desc": "Track reactive energy percentage metrics"
+        }
+    }
+    
     nav_selection = st.radio(
-        "Go to",
-        ["Raw Overview", 
-         "Intra-Week Consumption",
-         "Reactive Energy Usage",
-         "Reactive Energy %age Usage"]
+        "Select View",
+        list(nav_options.keys())
     )
+    
+    # Show description for selected view
+    st.markdown(f"""
+        <div class='sidebar-text'>
+        {nav_options[nav_selection]['desc']}
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Add footer information
+    st.markdown("---")
+    st.markdown("""
+        <div style='position: fixed; bottom: 0; padding: 1rem;'>
+        <small>Energy Dashboard v1.0</small>
+        </div>
+    """, unsafe_allow_html=True)
 
 st.title("Energy Consumption Dashboard")
 
