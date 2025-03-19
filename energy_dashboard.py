@@ -95,38 +95,85 @@ with st.container():
 if unit == "MWh":
     resampled_df = resampled_df / 1000
 
-fig1 = px.line(resampled_df, 
-               title=f"Energy Consumption Overview ({resample_period}ly)",
-               template="plotly_white")
+# Create figure with custom colors
+fig1 = go.Figure()
+
+# Color scheme for stations
+station_colors = {
+    'Statia Jucu 1': '#1f77b4',  # blue
+    'Statia Jucu 2': '#2ca02c',  # green
+}
+
+# Add traces with consistent colors
+for station in ['Statia Jucu 1', 'Statia Jucu 2']:
+    # EA+ solid line
+    fig1.add_trace(go.Scatter(
+        x=resampled_df.index,
+        y=resampled_df[f'EA+ - {station}'],
+        name=f'EA+ - {station}',
+        line=dict(color=station_colors[station], width=2),
+        legendgroup=f'group_{station}'
+    ))
+    
+    # EA- dashed line (same color as EA+)
+    fig1.add_trace(go.Scatter(
+        x=resampled_df.index,
+        y=resampled_df[f'EA- - {station}'],
+        name=f'EA- - {station}',
+        line=dict(color=station_colors[station], width=2, dash='dash'),
+        legendgroup=f'group_{station}'
+    ))
+    
+    # ER+ dotted line (lighter version of station color)
+    fig1.add_trace(go.Scatter(
+        x=resampled_df.index,
+        y=resampled_df[f'ER+ - {station}'],
+        name=f'ER+ - {station}',
+        line=dict(color=station_colors[station], width=1.5, dash='dot'),
+        opacity=0.7,
+        legendgroup=f'group_{station}'
+    ))
+    
+    # ER- dash-dot line (lighter version of station color)
+    fig1.add_trace(go.Scatter(
+        x=resampled_df.index,
+        y=resampled_df[f'ER- - {station}'],
+        name=f'ER- - {station}',
+        line=dict(color=station_colors[station], width=1.5, dash='dashdot'),
+        opacity=0.7,
+        legendgroup=f'group_{station}'
+    ))
 
 fig1.update_layout(
     height=600,
     showlegend=True,
     xaxis_title="Time",
-    yaxis_title=f"Energy Consumption ({unit})",  # Dynamic unit
+    yaxis_title=f"Energy Consumption ({unit})",
     hovermode='x unified',
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
+    title=f"Energy Consumption Overview ({resample_period}ly)",
     legend=dict(
         yanchor="top",
         y=0.99,
         xanchor="left",
         x=0.01,
-        bgcolor='rgba(255,255,255,0.8)'
+        bgcolor='rgba(255,255,255,0.8)',
+        groupclick="toggleitem"  # Allows clicking individual traces within groups
     )
 )
 
-# Update y-axis to show values with proper formatting
+# Update axes formatting
 fig1.update_yaxes(
     gridcolor='rgba(128,128,128,0.1)',
     zeroline=False,
-    tickformat=",.1f",  # Add thousands separator and one decimal place
-    ticksuffix=f" {unit}"   # Dynamic unit suffix
+    tickformat=",.1f",
+    ticksuffix=f" {unit}"
 )
 
 fig1.update_xaxes(gridcolor='rgba(128,128,128,0.1)', zeroline=False)
 
-# Update hover template to show proper units
+# Update hover template
 fig1.update_traces(
     hovertemplate="%{y:,.1f} " + unit + "<br>%{x}<extra></extra>"
 )
