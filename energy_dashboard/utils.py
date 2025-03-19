@@ -14,8 +14,8 @@ def strip_unit_tup(x):
     return (a, b)
 
 def resample_data(df, period):
-    if period == "Day":
-        return df.resample('D').sum()
+    if period == "Day" or period == "Day (6H)":
+        return df.resample('6H').sum()
     elif period == "Week":
         return df.resample('W').sum()
     else:  # Month

@@ -20,8 +20,8 @@ tetarom_df = load_data()
 with st.container():
     resample_period = st.selectbox(
         "Aggregation Period",
-        ["Day", "Week", "Month"],
-        index=1
+        ["Day (6H)", "Week", "Month"],
+        index=0
     )
 
 # Convert MultiIndex DataFrame to regular DataFrame with flattened column names
@@ -59,7 +59,16 @@ for station in ['Statia Jucu 1', 'Statia Jucu 2']:
         x=resampled_df.index,
         y=resampled_df[f'EA+ - {station}'],
         name=f'EA+ - {station}',
-        line=dict(color=station_colors[station], width=2),
+        mode='lines+markers',
+        marker=dict(
+            color=station_colors[station],
+            size=4
+        ),
+        line=dict(
+            color=station_colors[station],
+            shape='linear'
+        ),
+        connectgaps=False,
         legendgroup=f'group_{station}'
     ))
     
@@ -68,7 +77,18 @@ for station in ['Statia Jucu 1', 'Statia Jucu 2']:
         x=resampled_df.index,
         y=resampled_df[f'EA- - {station}'],
         name=f'EA- - {station}',
-        line=dict(color=station_colors[station], width=2, dash='dash'),
+        mode='lines+markers',
+        marker=dict(
+            color=station_colors[station],
+            size=4,
+            symbol='x'
+        ),
+        line=dict(
+            color=station_colors[station],
+            dash='dash',
+            shape='linear'
+        ),
+        connectgaps=False,
         legendgroup=f'group_{station}'
     ))
     
@@ -77,7 +97,18 @@ for station in ['Statia Jucu 1', 'Statia Jucu 2']:
         x=resampled_df.index,
         y=resampled_df[f'ER+ - {station}'],
         name=f'ER+ - {station}',
-        line=dict(color=station_colors[station], width=1.5, dash='dot'),
+        mode='lines+markers',
+        marker=dict(
+            color=station_colors[station],
+            size=4,
+            symbol='diamond'
+        ),
+        line=dict(
+            color=station_colors[station],
+            dash='dot',
+            shape='linear'
+        ),
+        connectgaps=False,
         opacity=0.7,
         legendgroup=f'group_{station}'
     ))
@@ -87,7 +118,18 @@ for station in ['Statia Jucu 1', 'Statia Jucu 2']:
         x=resampled_df.index,
         y=resampled_df[f'ER- - {station}'],
         name=f'ER- - {station}',
-        line=dict(color=station_colors[station], width=1.5, dash='dashdot'),
+        mode='lines+markers',
+        marker=dict(
+            color=station_colors[station],
+            size=4,
+            symbol='triangle-up'
+        ),
+        line=dict(
+            color=station_colors[station],
+            dash='dashdot',
+            shape='linear'
+        ),
+        connectgaps=False,
         opacity=0.7,
         legendgroup=f'group_{station}'
     ))
