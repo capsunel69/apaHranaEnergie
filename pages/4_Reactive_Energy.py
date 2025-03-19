@@ -169,9 +169,27 @@ fig2.update_yaxes(title_text="EA", secondary_y=True)
 
 fig2 = update_plot_style(fig2)
 
-# Synchronize x-axes
-fig1.update_layout(xaxis=dict(matches='x'))
-fig2.update_layout(xaxis=dict(matches='x'))
+# Add time range selector
+date_range = st.date_input(
+    "Select Date Range",
+    value=(df.index.min(), df.index.max()),
+    min_value=df.index.min(),
+    max_value=df.index.max()
+)
+
+# Update both figures with the same x-axis range
+if len(date_range) == 2:  # Only update when both dates are selected
+    fig1.update_layout(
+        xaxis=dict(
+            range=[str(date_range[0]), str(date_range[1])]
+        )
+    )
+
+    fig2.update_layout(
+        xaxis=dict(
+            range=[str(date_range[0]), str(date_range[1])]
+        )
+    )
 
 # Display plots
 st.plotly_chart(fig1, use_container_width=True)
