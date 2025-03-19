@@ -83,7 +83,24 @@ erpc = pd.DataFrame({
 
 fig2 = make_subplots(specs=[[{"secondary_y": True}]])
 
-# Add traces for fig2
+def find_intersection_point(x1, y1, x2, y2, limit):
+    """Find the point where the line crosses the limit"""
+    if pd.isna(y1) or pd.isna(y2):  # Handle NaN values
+        return None
+        
+    if (y1 > limit and y2 < limit) or (y1 < limit and y2 > limit):
+        # Linear interpolation to find exact crossing point
+        try:
+            dx = (x2 - x1).total_seconds()
+            dy = y2 - y1
+            slope = dy / dx
+            dx_intersection = (limit - y1) / slope
+            x_intersection = x1 + pd.Timedelta(seconds=float(dx_intersection))
+            return x_intersection, limit
+        except (ValueError, TypeError):
+            return None
+    return None
+
 # ER+ line with color segments based on limit
 erp_segments = []
 erp_dates = []
@@ -91,8 +108,13 @@ erp_colors = []
 current_segment = []
 current_dates = []
 
-for date, value in erpc['ER+ %age'].items():
-    if pd.isna(value):  # Handle NaN values
+for i in range(len(erpc.index) - 1):
+    date = erpc.index[i]
+    next_date = erpc.index[i + 1]
+    value = erpc['ER+ %age'].iloc[i]
+    next_value = erpc['ER+ %age'].iloc[i + 1]
+    
+    if pd.isna(value) or pd.isna(next_value):
         if current_segment:
             erp_segments.append(current_segment)
             erp_dates.append(current_dates)
@@ -100,24 +122,34 @@ for date, value in erpc['ER+ %age'].items():
             current_segment = []
             current_dates = []
         continue
-        
-    current_segment.append(value)
-    current_dates.append(date)
     
-    if len(current_segment) > 1:
-        if (current_segment[-1] > limit_x1) != (current_segment[-2] > limit_x1):
-            # Include the transition point in both segments
-            erp_segments.append(current_segment)
-            erp_dates.append(current_dates)
-            erp_colors.append('red' if current_segment[-2] > limit_x1 else COLORS['ER+'])
-            current_segment = [current_segment[-1]]  # Start new segment with transition point
-            current_dates = [current_dates[-1]]  # Start new dates with transition point
+    if not current_segment:
+        current_segment.append(value)
+        current_dates.append(date)
+    
+    intersection = find_intersection_point(date, value, next_date, next_value, limit_x1)
+    
+    if intersection:
+        # Add the intersection point to current segment and start new segment
+        current_segment.append(limit_x1)
+        current_dates.append(intersection[0])
+        erp_segments.append(current_segment)
+        erp_dates.append(current_dates)
+        erp_colors.append('red' if value > limit_x1 else COLORS['ER+'])
+        
+        # Start new segment from intersection point
+        current_segment = [limit_x1, next_value]
+        current_dates = [intersection[0], next_date]
+    else:
+        current_segment.append(next_value)
+        current_dates.append(next_date)
 
 if current_segment:
     erp_segments.append(current_segment)
     erp_dates.append(current_dates)
     erp_colors.append('red' if current_segment[-1] > limit_x1 else COLORS['ER+'])
 
+# Add traces for ER+
 for segment, dates, color in zip(erp_segments, erp_dates, erp_colors):
     fig2.add_trace(
         go.Scatter(
@@ -125,7 +157,7 @@ for segment, dates, color in zip(erp_segments, erp_dates, erp_colors):
             y=segment,
             name="ER+ %age",
             line=dict(width=2, color=color),
-            mode='lines',  # Only show lines, no markers
+            mode='lines',
             showlegend=(color == COLORS['ER+']),
             connectgaps=False
         ),
@@ -139,8 +171,13 @@ ern_colors = []
 current_segment = []
 current_dates = []
 
-for date, value in erpc['ER- %age'].items():
-    if pd.isna(value):
+for i in range(len(erpc.index) - 1):
+    date = erpc.index[i]
+    next_date = erpc.index[i + 1]
+    value = erpc['ER- %age'].iloc[i]
+    next_value = erpc['ER- %age'].iloc[i + 1]
+    
+    if pd.isna(value) or pd.isna(next_value):
         if current_segment:
             ern_segments.append(current_segment)
             ern_dates.append(current_dates)
@@ -148,24 +185,34 @@ for date, value in erpc['ER- %age'].items():
             current_segment = []
             current_dates = []
         continue
-        
-    current_segment.append(value)
-    current_dates.append(date)
     
-    if len(current_segment) > 1:
-        if (current_segment[-1] > limit_x1) != (current_segment[-2] > limit_x1):
-            # Include the transition point in both segments
-            ern_segments.append(current_segment)
-            ern_dates.append(current_dates)
-            ern_colors.append('red' if current_segment[-2] > limit_x1 else COLORS['ER-'])
-            current_segment = [current_segment[-1]]  # Start new segment with transition point
-            current_dates = [current_dates[-1]]  # Start new dates with transition point
+    if not current_segment:
+        current_segment.append(value)
+        current_dates.append(date)
+    
+    intersection = find_intersection_point(date, value, next_date, next_value, limit_x1)
+    
+    if intersection:
+        # Add the intersection point to current segment and start new segment
+        current_segment.append(limit_x1)
+        current_dates.append(intersection[0])
+        ern_segments.append(current_segment)
+        ern_dates.append(current_dates)
+        ern_colors.append('red' if value > limit_x1 else COLORS['ER-'])
+        
+        # Start new segment from intersection point
+        current_segment = [limit_x1, next_value]
+        current_dates = [intersection[0], next_date]
+    else:
+        current_segment.append(next_value)
+        current_dates.append(next_date)
 
 if current_segment:
     ern_segments.append(current_segment)
     ern_dates.append(current_dates)
     ern_colors.append('red' if current_segment[-1] > limit_x1 else COLORS['ER-'])
 
+# Add traces for ER-
 for segment, dates, color in zip(ern_segments, ern_dates, ern_colors):
     fig2.add_trace(
         go.Scatter(
@@ -173,7 +220,7 @@ for segment, dates, color in zip(ern_segments, ern_dates, ern_colors):
             y=segment,
             name="ER- %age",
             line=dict(width=2, color=color),
-            mode='lines',  # Only show lines, no markers
+            mode='lines',
             showlegend=(color == COLORS['ER-']),
             connectgaps=False
         ),
