@@ -20,16 +20,16 @@ tetarom_df = load_data()
 with st.container():
     col1, col2 = st.columns([1, 2])
     with col1:
-        intra_week_station = st.selectbox(
+        intra_week_station = st.segmented_control(
             "Select Station",
-            ["Statia Jucu 1", "Statia Jucu 2", "Total"],
-            key="intra_week_selector"
+            options=["Statia Jucu 1", "Statia Jucu 2", "Total"],
+            default="Statia Jucu 1"  # Set default to first station
         )
     with col2:
-        aggregation_period = st.selectbox(
+        aggregation_period = st.segmented_control(
             "View By",
-            ["Week", "Month"],
-            key="aggregation_selector"
+            options=["Week", "Month"],
+            default="Week"
         )
 
 # Prepare data for intra-week analysis

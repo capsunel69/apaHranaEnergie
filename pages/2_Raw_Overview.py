@@ -18,10 +18,10 @@ tetarom_df = load_data()
 
 # Controls in a container above the plot
 with st.container():
-    resample_period = st.selectbox(
+    resample_period = st.segmented_control(
         "Aggregation Period",
-        ["Day (6H)", "Week", "Month"],
-        index=0
+        options=["Day (6H)", "Week", "Month"],
+        default="Day (6H)"
     )
 
 # Convert MultiIndex DataFrame to regular DataFrame with flattened column names
@@ -33,10 +33,10 @@ resampled_df = resample_data(flat_df, resample_period)
 
 # Add unit selection
 with st.container():
-    unit = st.selectbox(
+    unit = st.segmented_control(
         "Unit",
-        ["kWh", "MWh"],
-        index=1
+        options=["kWh", "MWh"],
+        default="MWh"
     )
 
 # Convert to MWh only if selected

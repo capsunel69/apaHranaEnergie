@@ -1,3 +1,7 @@
+[server]
+# If your file is named "Energy_Dashboard.py"
+entrypoint = "1_Energy_Dashboard.py"
+
 [theme]
 base = "light"
 primaryColor = "#FF4B4B"

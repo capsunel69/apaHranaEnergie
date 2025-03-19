@@ -23,9 +23,10 @@ limit_x1 = 0.4843  # 48.43%
 limit_x3 = 1.1691  # 116.91%
 
 # Station selector (single one for both plots)
-station = st.selectbox(
+station = st.segmented_control(
     "Select Station",
-    tetarom_df.columns.get_level_values('location').unique()
+    options=tetarom_df.columns.get_level_values('location').unique(),
+    default=tetarom_df.columns.get_level_values('location').unique()[0]  # Set default to first station
 )
 
 # Filter data for selected station
