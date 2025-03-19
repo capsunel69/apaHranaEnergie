@@ -66,17 +66,25 @@ fig2 = make_subplots(specs=[[{"secondary_y": True}]])
 # Split the data into above and below limit for ER+ %age
 mask_above = erpc['ER+ %age'] > limit_x1
 
-# Create series with NaN values at transition points
+# Create series with NaN values
 normal_erp = erpc['ER+ %age'].copy()
 above_erp = erpc['ER+ %age'].copy()
 
+# Find crossing points
+crosses_up = (erpc['ER+ %age'] > limit_x1) & (erpc['ER+ %age'].shift(1) <= limit_x1)
+crosses_down = (erpc['ER+ %age'] <= limit_x1) & (erpc['ER+ %age'].shift(1) > limit_x1)
+
+# Add limit points at crossings
+for cross_mask in [crosses_up, crosses_down]:
+    cross_points = erpc.index[cross_mask]
+    for point in cross_points:
+        # Insert a point exactly at the limit
+        normal_erp[point] = limit_x1
+        above_erp[point] = limit_x1
+
+# Set the rest of the values
 normal_erp[mask_above] = None
 above_erp[~mask_above] = None
-
-# Add transition points (NaN values)
-transitions = mask_above != mask_above.shift()
-normal_erp[transitions] = None
-above_erp[transitions] = None
 
 fig2.add_trace(
     go.Scatter(x=normal_erp.index, y=normal_erp, 
@@ -94,17 +102,25 @@ fig2.add_trace(
 # Split the data for ER- %age
 mask_above_negative = erpc['ER- %age'] > limit_x1
 
-# Create series with NaN values at transition points
+# Create series with NaN values
 normal_ern = erpc['ER- %age'].copy()
 above_ern = erpc['ER- %age'].copy()
 
+# Find crossing points for ER-
+crosses_up_n = (erpc['ER- %age'] > limit_x1) & (erpc['ER- %age'].shift(1) <= limit_x1)
+crosses_down_n = (erpc['ER- %age'] <= limit_x1) & (erpc['ER- %age'].shift(1) > limit_x1)
+
+# Add limit points at crossings
+for cross_mask in [crosses_up_n, crosses_down_n]:
+    cross_points = erpc.index[cross_mask]
+    for point in cross_points:
+        # Insert a point exactly at the limit
+        normal_ern[point] = limit_x1
+        above_ern[point] = limit_x1
+
+# Set the rest of the values
 normal_ern[mask_above_negative] = None
 above_ern[~mask_above_negative] = None
-
-# Add transition points (NaN values)
-transitions_negative = mask_above_negative != mask_above_negative.shift()
-normal_ern[transitions_negative] = None
-above_ern[transitions_negative] = None
 
 fig2.add_trace(
     go.Scatter(x=normal_ern.index, y=normal_ern, 
