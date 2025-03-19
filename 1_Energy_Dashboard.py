@@ -12,6 +12,12 @@ st.set_page_config(
 # Initialize session state for authentication
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
+    # Add a new state variable for storing authentication status in browser cookies
+    if 'authentication_status' not in st.query_params:
+        st.query_params['authentication_status'] = 'false'
+    else:
+        # Restore authentication from URL parameters
+        st.session_state.authenticated = st.query_params['authentication_status'] == 'true'
 
 # Add custom CSS for improved styling with dark mode support
 st.markdown("""
@@ -79,6 +85,10 @@ st.markdown("""
         background-color: var(--secondary-background-color);
         border-radius: 1rem;
         text-align: center;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 400px;
+        margin-top: 20vh;
     }
     
     .login-title {
@@ -108,6 +118,8 @@ def authenticate(password):
     correct_password = "energy2024"
     if password == correct_password:
         st.session_state.authenticated = True
+        # Store authentication status in URL parameters
+        st.query_params['authentication_status'] = 'true'
         return True
     return False
 
@@ -138,7 +150,7 @@ def show_main_content():
 
 # Login form
 def show_login():
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2, col3 = st.columns([1, 0.5, 1])
     with col2:
         st.markdown("""
             <div class="login-container">
