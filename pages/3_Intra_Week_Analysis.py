@@ -71,6 +71,7 @@ n_periods = len(pattern.columns)
 
 # Add a line for each period in reverse order
 for idx, column in enumerate(reversed(pattern.columns)):
+    # Calculate opacity - newer dates will be more visible
     opacity = 0.08 + (0.92 * idx / (n_periods - 1))
     fig4.add_trace(
         go.Scatter(
@@ -80,7 +81,7 @@ for idx, column in enumerate(reversed(pattern.columns)):
             mode='lines',
             line=dict(
                 width=1.5,
-                color=f'rgba(255, 127, 14, {opacity})',
+                color=f'rgba(31, 119, 180, {opacity})',  # Blue color with varying opacity
                 shape='spline',
                 smoothing=0.3
             ),
