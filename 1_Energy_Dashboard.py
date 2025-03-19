@@ -9,6 +9,10 @@ st.set_page_config(
     page_icon="⚡"
 )
 
+# Initialize session state for authentication
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+
 # Add custom CSS for improved styling with dark mode support
 st.markdown("""
     <style>
@@ -68,28 +72,95 @@ st.markdown("""
     .welcome-container p {
         color: var(--text-color) !important;
     }
+    
+    /* Login form styling */
+    .login-container {
+        padding: 1rem;
+        background-color: var(--secondary-background-color);
+        border-radius: 1rem;
+        text-align: center;
+    }
+    
+    .login-title {
+        margin-bottom: 2rem;
+    }
+    
+    .login-title p {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0;
+    }
+    
+    .login-form {
+        padding: 0 1rem;
+    }
+    
+    .stAlert {
+        margin-top: 1rem;
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# Load data once at startup
-tetarom_df = load_data()
+# Authentication function
+def authenticate(password):
+    # Replace this with your desired password
+    correct_password = "energy2024"
+    if password == correct_password:
+        st.session_state.authenticated = True
+        return True
+    return False
 
-# Main page title with icon
-st.title("⚡ Energy Consumption Dashboard")
+# Main content function
+def show_main_content():
+    # Load data once at startup
+    tetarom_df = load_data()
 
-# Welcome message in a card-like container
-st.markdown("""
-    <div class="welcome-container">
-        <h2 style="color: #1E3D59; margin-bottom: 1rem;">Welcome to the Energy Dashboard</h2>
-        <p style="color: #2C3E50; font-size: 1.1rem; margin-bottom: 1.5rem;">
-            Monitor and analyze your energy consumption patterns with our interactive dashboard.
-            Use the sidebar to navigate between different views:
-        </p>
-        <div class="feature-list">
-            <div class="feature-item">📊 <strong>Raw Overview</strong> - View raw energy consumption data</div>
-            <div class="feature-item">📅 <strong>Intra-Week Consumption</strong> - Analyze consumption patterns within weeks</div>
-            <div class="feature-item">⚡ <strong>Reactive Energy Usage</strong> - Monitor reactive energy consumption</div>
-            <div class="feature-item">📈 <strong>Reactive Energy %age Usage</strong> - Track reactive energy percentage metrics</div>
+    # Main page title with icon
+    st.title("⚡ Energy Consumption Dashboard")
+
+    # Welcome message in a card-like container
+    st.markdown("""
+        <div class="welcome-container">
+            <h2 style="color: #1E3D59; margin-bottom: 1rem;">Welcome to the Energy Dashboard</h2>
+            <p style="color: #2C3E50; font-size: 1.1rem; margin-bottom: 1.5rem;">
+                Monitor and analyze your energy consumption patterns with our interactive dashboard.
+                Use the sidebar to navigate between different views:
+            </p>
+            <div class="feature-list">
+                <div class="feature-item">📊 <strong>Raw Overview</strong> - View raw energy consumption data</div>
+                <div class="feature-item">📅 <strong>Intra-Week Consumption</strong> - Analyze consumption patterns within weeks</div>
+                <div class="feature-item">⚡ <strong>Reactive Energy Usage</strong> - Monitor reactive energy consumption</div>
+                <div class="feature-item">📈 <strong>Reactive Energy %age Usage</strong> - Track reactive energy percentage metrics</div>
+            </div>
         </div>
-    </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+# Login form
+def show_login():
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.markdown("""
+            <div class="login-container">
+                <div class="login-title">
+                    <h2>🔒 Login Required</h2>
+                <div class="login-form">
+                </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        password = st.text_input("Enter Password", type="password", label_visibility="collapsed", placeholder="Enter Password")
+        
+        if st.button("Login", use_container_width=True):
+            if authenticate(password):
+                st.success("Login successful! Please wait...")
+                st.rerun()
+            else:
+                st.error("Incorrect password. Please try again.")
+
+# Main app logic
+if not st.session_state.authenticated:
+    show_login()
+else:
+    show_main_content()

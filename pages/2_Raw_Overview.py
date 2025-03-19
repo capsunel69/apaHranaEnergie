@@ -11,6 +11,11 @@ st.set_page_config(
     page_icon="⚡"
 )
 
+# Check authentication
+if 'authenticated' not in st.session_state or not st.session_state.authenticated:
+    st.error("Please log in from the home page to access this content.")
+    st.stop()
+
 # Create placeholder for the title
 title_placeholder = st.empty()
 title_placeholder.title("Raw Overview")
