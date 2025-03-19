@@ -83,8 +83,17 @@ flat_df.columns = [f"{col[0]} - {col[1]}" for col in tetarom_df.columns]
 # Apply resampling
 resampled_df = resample_data(flat_df, resample_period)
 
-# Convert kWh to MWh
-resampled_df = resampled_df / 1000  # Convert to MWh
+# Add unit selection
+with st.container():
+    unit = st.selectbox(
+        "Unit",
+        ["kWh", "MWh"],
+        index=1
+    )
+
+# Convert to MWh only if selected
+if unit == "MWh":
+    resampled_df = resampled_df / 1000
 
 fig1 = px.line(resampled_df, 
                title=f"Energy Consumption Overview ({resample_period}ly)",
@@ -94,7 +103,7 @@ fig1.update_layout(
     height=600,
     showlegend=True,
     xaxis_title="Time",
-    yaxis_title="Energy Consumption (MWh)",
+    yaxis_title=f"Energy Consumption ({unit})",  # Dynamic unit
     hovermode='x unified',
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
@@ -107,19 +116,19 @@ fig1.update_layout(
     )
 )
 
-# Update y-axis to show values in MWh with proper formatting
+# Update y-axis to show values with proper formatting
 fig1.update_yaxes(
     gridcolor='rgba(128,128,128,0.1)',
     zeroline=False,
     tickformat=",.1f",  # Add thousands separator and one decimal place
-    ticksuffix=" MWh"
+    ticksuffix=f" {unit}"   # Dynamic unit suffix
 )
 
 fig1.update_xaxes(gridcolor='rgba(128,128,128,0.1)', zeroline=False)
 
 # Update hover template to show proper units
 fig1.update_traces(
-    hovertemplate="%{y:,.1f} MWh<br>%{x}<extra></extra>"
+    hovertemplate="%{y:,.1f} " + unit + "<br>%{x}<extra></extra>"
 )
 
 st.plotly_chart(fig1, use_container_width=True)
