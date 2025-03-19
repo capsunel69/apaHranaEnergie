@@ -3,7 +3,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-from energy_dashboard import load_data, update_plot_style, COLORS
+from energy_dashboard.utils import load_data, update_plot_style, COLORS
 
 # Set page config
 st.set_page_config(
