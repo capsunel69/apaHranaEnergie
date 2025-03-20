@@ -140,6 +140,10 @@ def show_main_content():
     # Main page title with icon
     st.title("⚡ Energy Consumption Dashboard")
 
+    if tetarom_df.empty:
+        st.warning("No data available. Please check if the data files are present in the 'data' directory.")
+        return
+
     # Welcome message in a card-like container
     st.markdown("""
         <div class="welcome-container">

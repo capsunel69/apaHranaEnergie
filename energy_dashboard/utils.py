@@ -93,12 +93,22 @@ def update_plot_style(fig, color_map=COLORS):
 @st.cache_data
 def load_data():
     data_path = 'data/tetarom_clean_merged_data.feather'
-    tetarom_df = pd.read_feather(data_path)
-    tetarom_df.columns = tetarom_df.columns.map(strip_unit_tup)
-    return tetarom_df 
+    try:
+        tetarom_df = pd.read_feather(data_path)
+        tetarom_df.columns = tetarom_df.columns.map(strip_unit_tup)
+        return tetarom_df
+    except FileNotFoundError:
+        st.error(f"Data file not found: {data_path}")
+        st.info("Please ensure the data file exists in the correct location.")
+        return pd.DataFrame()  # Return empty DataFrame
 
 @st.cache_data
 def load_forecast_data():
     data_path = 'data/tetarom_ea_forecasts.feather'
-    forecast_df = pd.read_feather(data_path)
-    return forecast_df 
+    try:
+        forecast_df = pd.read_feather(data_path)
+        return forecast_df
+    except FileNotFoundError:
+        st.error(f"Forecast data file not found: {data_path}")
+        st.info("Please ensure the forecast data file exists in the correct location.")
+        return pd.DataFrame()  # Return empty DataFrame
