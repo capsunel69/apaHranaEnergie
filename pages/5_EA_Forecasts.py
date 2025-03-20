@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from plotly.subplots import make_subplots
-from energy_dashboard.utils import update_plot_style, load_forecast_data
+from energy_dashboard.utils import update_plot_style, load_forecast_data, load_data
 
 # Set page config (matching the main dashboard style)
 st.set_page_config(
@@ -21,72 +21,85 @@ def create_forecast_plot(df, station):
     }
     station_name = station_map[station]
     
-    # Get the values for the selected station
-    y_values = df[station_name, 'y'] if ('y' in df[station_name]) else None
-    yhat_values = df[station_name, 'yhat']
-    yhat_lower = df[station_name, 'yhat_lower']
-    yhat_upper = df[station_name, 'yhat_upper']
+    # Load historical data and calculate EA
+    historical_df = load_data()  # Load from tetarom_clean_merged_data
+    
+    # Filter historical data from Nov 1st until the start of forecast
+    historical_df = historical_df[
+        (historical_df.index >= '2024-11-01') & 
+        (historical_df.index < df.index[0])  # Stop where forecast begins
+    ]
+    
+    # Calculate EA for the selected station
+    # Note: The columns are structured as (measurement_type, station_name)
+    try:
+        ea_plus = historical_df[('EA+', station_name)]
+        ea_minus = historical_df[('EA-', station_name)]
+        historical_ea = ea_plus - ea_minus
 
-    fig = go.Figure()
+        fig = go.Figure()
 
-    # Add historical values if they exist
-    if y_values is not None:
+        # Add historical EA values
         fig.add_trace(
             go.Scatter(
-                x=df.index,
-                y=y_values,
-                name='Historical Values',
+                x=historical_df.index,
+                y=historical_ea,
+                name='Historical EA',
                 line=dict(color='blue')
             )
         )
 
-    # Add forecast
-    fig.add_trace(
-        go.Scatter(
-            x=df.index,
-            y=yhat_values,
-            name='$\\hat{y}$ (Forecast)',
-            line=dict(color='red', dash='dash')
+        # Add forecast
+        fig.add_trace(
+            go.Scatter(
+                x=df.index,
+                y=df[station_name, 'yhat'],
+                name='$\\hat{y}$ (Forecast)',
+                line=dict(color='red', dash='dash')
+            )
         )
-    )
 
-    # Add confidence bands
-    fig.add_trace(
-        go.Scatter(
-            x=df.index,
-            y=yhat_upper,
-            fill=None,
-            mode='lines',
-            line_color='rgba(0,100,80,0)',
-            showlegend=False
+        # Add confidence bands
+        fig.add_trace(
+            go.Scatter(
+                x=df.index,
+                y=df[station_name, 'yhat_upper'],
+                fill=None,
+                mode='lines',
+                line_color='rgba(0,100,80,0)',
+                showlegend=False
+            )
         )
-    )
 
-    fig.add_trace(
-        go.Scatter(
-            x=df.index,
-            y=yhat_lower,
-            fill='tonexty',
-            mode='lines',
-            line_color='rgba(0,100,80,0)',
-            name='Confidence Interval',
-            fillcolor='rgba(0,100,80,0.2)'
+        fig.add_trace(
+            go.Scatter(
+                x=df.index,
+                y=df[station_name, 'yhat_lower'],
+                fill='tonexty',
+                mode='lines',
+                line_color='rgba(0,100,80,0)',
+                name='Confidence Interval',
+                fillcolor='rgba(0,100,80,0.2)'
+            )
         )
-    )
 
-    # Update plot style using the utility function
-    fig = update_plot_style(fig)
+        # Update plot style using the utility function
+        fig = update_plot_style(fig)
+        
+        fig.update_layout(
+            title=f'Energy Consumption Forecast - {station}',
+            xaxis_title='Date',
+            yaxis_title='Energy Consumption',
+            height=600,
+            showlegend=True,
+            hovermode='x unified'
+        )
+
+        return fig
     
-    fig.update_layout(
-        title=f'Energy Consumption Forecast - {station}',
-        xaxis_title='Date',
-        yaxis_title='Energy Consumption',
-        height=600,
-        showlegend=True,
-        hovermode='x unified'
-    )
-
-    return fig
+    except KeyError as e:
+        st.error(f"Could not find the required columns for {station_name}. Available columns: {historical_df.columns.tolist()}")
+        return None
 
 def main():
     st.title("📈 Energy Consumption Forecasts")
