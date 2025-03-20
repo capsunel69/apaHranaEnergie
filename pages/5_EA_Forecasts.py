@@ -50,7 +50,7 @@ def create_forecast_plot(df, station):
             go.Scatter(
                 x=historical_df.index,
                 y=historical_ea,
-                name='y (Historical)',
+                name='y',
                 line=dict(color='blue')
             )
         )
@@ -60,7 +60,7 @@ def create_forecast_plot(df, station):
             go.Scatter(
                 x=df.index,
                 y=df[(station_name, 'yhat_upper')],
-                name='$\\hat{y}_{upper}$',
+                name='ŷ upper',
                 line=dict(color='red'),
                 mode='lines'
             )
@@ -71,7 +71,7 @@ def create_forecast_plot(df, station):
             go.Scatter(
                 x=df.index,
                 y=df[(station_name, 'yhat_lower')],
-                name='$\\hat{y}_{lower}$',
+                name='ŷ lower',
                 line=dict(color='green'),
                 mode='lines',
                 fill='tonexty',  # Fill between lower and upper bounds
@@ -84,7 +84,7 @@ def create_forecast_plot(df, station):
             go.Scatter(
                 x=df.index,
                 y=df[(station_name, 'yhat')],
-                name='$\\hat{y}$ (Forecast)',
+                name='ŷ',
                 line=dict(color='orange'),
                 mode='lines'
             )
@@ -129,7 +129,7 @@ def main():
     st.markdown("""
     ### About this forecast
     - Blue line shows historical values (if available)
-    - Red dashed line shows the forecast ($\\hat{y}$)
+    - Red dashed line shows the forecast (ŷ)
     - Shaded area represents the confidence interval (lower and upper bounds)
     """)
 
