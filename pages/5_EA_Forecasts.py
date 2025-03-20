@@ -4,6 +4,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 from energy_dashboard.utils import update_plot_style, load_forecast_data, load_data
 
+
 # Set page config (matching the main dashboard style)
 st.set_page_config(
     layout="wide",
@@ -11,6 +12,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
     page_icon="📈"
 )
+
+# Check authentication
+if 'authenticated' not in st.session_state or not st.session_state.authenticated:
+    st.error("Please log in from the home page to access this content.")
+    st.stop()
 
 # Create the visualization
 def create_forecast_plot(df, station):
@@ -99,7 +105,27 @@ def create_forecast_plot(df, station):
             yaxis_title='Energy Consumption',
             height=600,
             showlegend=True,
-            hovermode='x unified'
+            hovermode='x unified',
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=0.01,
+                bgcolor='rgba(255,255,255,0.8)',
+                title=dict(
+                    text='EA Values',
+                    side='top'
+                )
+            ),
+            xaxis=dict(
+                rangeslider=dict(visible=True),
+                type="date"
+            )
+        )
+
+        # Update hover template
+        fig.update_traces(
+            hovertemplate="%{y:,.1f}<br>%{x}<extra></extra>"
         )
 
         return fig
@@ -128,8 +154,8 @@ def main():
     # Add some explanatory text
     st.markdown("""
     ### About this forecast
-    - Blue line shows historical values (if available)
-    - Red dashed line shows the forecast (ŷ)
+    - Blue line shows historical values (EA)
+    - Green, Orange and Red dashed lines shows the forecast (ŷ)
     - Shaded area represents the confidence interval (lower and upper bounds)
     """)
 
