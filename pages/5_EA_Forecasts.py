@@ -20,12 +20,7 @@ if 'authenticated' not in st.session_state or not st.session_state.authenticated
 
 # Create the visualization
 def create_forecast_plot(df, station):
-    station_map = {
-        'Station 1': 'Statia Jucu 1',
-        'Station 2': 'Statia Jucu 2',
-        'All': 'All'
-    }
-    station_name = station_map[station]
+    station_name = station
     
     # Load historical data and calculate EA
     historical_df = load_data()  # Load from tetarom_clean_merged_data
@@ -33,7 +28,7 @@ def create_forecast_plot(df, station):
     # Filter historical data from Nov 1st until the start of forecast
     historical_df = historical_df[
         (historical_df.index >= '2024-11-01') & 
-        (historical_df.index < df.index[0])
+        (historical_df.index <= df.index[0])
     ]
     
     try:
@@ -140,10 +135,10 @@ def main():
     # Load data
     df = load_forecast_data()
     
-    # Station selector
+    # Updated station selector with direct station names
     station = st.selectbox(
         "Select Station",
-        options=['Station 1', 'Station 2', 'All'],
+        options=['Statia Jucu 1', 'Statia Jucu 2', 'All'],
         index=0
     )
     
