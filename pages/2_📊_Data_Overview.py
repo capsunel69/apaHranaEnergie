@@ -24,9 +24,6 @@ title_placeholder.title("Data Overview")
 main_placeholder = st.empty()
 
 with st.spinner('Loading and processing data...'):
-    import time
-    time.sleep(1)  # Increased delay to ensure visibility
-
     # Load data
     tetarom_df = load_data()
 
