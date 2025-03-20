@@ -27,15 +27,21 @@ def create_forecast_plot(df, station):
     # Filter historical data from Nov 1st until the start of forecast
     historical_df = historical_df[
         (historical_df.index >= '2024-11-01') & 
-        (historical_df.index < df.index[0])  # Stop where forecast begins
+        (historical_df.index < df.index[0])
     ]
     
-    # Calculate EA for the selected station
-    # Note: The columns are structured as (measurement_type, station_name)
     try:
-        ea_plus = historical_df[('EA+', station_name)]
-        ea_minus = historical_df[('EA-', station_name)]
-        historical_ea = ea_plus - ea_minus
+        # Calculate EA based on station selection
+        if station_name == 'All':
+            ea_plus_1 = historical_df[('EA+', 'Statia Jucu 1')]
+            ea_minus_1 = historical_df[('EA-', 'Statia Jucu 1')]
+            ea_plus_2 = historical_df[('EA+', 'Statia Jucu 2')]
+            ea_minus_2 = historical_df[('EA-', 'Statia Jucu 2')]
+            historical_ea = (ea_plus_1 - ea_minus_1) + (ea_plus_2 - ea_minus_2)
+        else:
+            ea_plus = historical_df[('EA+', station_name)]
+            ea_minus = historical_df[('EA-', station_name)]
+            historical_ea = ea_plus - ea_minus
 
         fig = go.Figure()
 
@@ -44,42 +50,43 @@ def create_forecast_plot(df, station):
             go.Scatter(
                 x=historical_df.index,
                 y=historical_ea,
-                name='Historical EA',
+                name='y (Historical)',
                 line=dict(color='blue')
             )
         )
 
-        # Add forecast
+        # Add upper bound
         fig.add_trace(
             go.Scatter(
                 x=df.index,
-                y=df[station_name, 'yhat'],
+                y=df[(station_name, 'yhat_upper')],
+                name='$\\hat{y}_{upper}$',
+                line=dict(color='red'),
+                mode='lines'
+            )
+        )
+
+        # Add lower bound
+        fig.add_trace(
+            go.Scatter(
+                x=df.index,
+                y=df[(station_name, 'yhat_lower')],
+                name='$\\hat{y}_{lower}$',
+                line=dict(color='green'),
+                mode='lines',
+                fill='tonexty',  # Fill between lower and upper bounds
+                fillcolor='rgba(68, 68, 68, 0.1)'
+            )
+        )
+
+        # Add forecast line
+        fig.add_trace(
+            go.Scatter(
+                x=df.index,
+                y=df[(station_name, 'yhat')],
                 name='$\\hat{y}$ (Forecast)',
-                line=dict(color='red', dash='dash')
-            )
-        )
-
-        # Add confidence bands
-        fig.add_trace(
-            go.Scatter(
-                x=df.index,
-                y=df[station_name, 'yhat_upper'],
-                fill=None,
-                mode='lines',
-                line_color='rgba(0,100,80,0)',
-                showlegend=False
-            )
-        )
-
-        fig.add_trace(
-            go.Scatter(
-                x=df.index,
-                y=df[station_name, 'yhat_lower'],
-                fill='tonexty',
-                mode='lines',
-                line_color='rgba(0,100,80,0)',
-                name='Confidence Interval',
-                fillcolor='rgba(0,100,80,0.2)'
+                line=dict(color='orange'),
+                mode='lines'
             )
         )
 
@@ -98,7 +105,7 @@ def create_forecast_plot(df, station):
         return fig
     
     except KeyError as e:
-        st.error(f"Could not find the required columns for {station_name}. Available columns: {historical_df.columns.tolist()}")
+        st.error(f"Could not find the required columns for {station_name}. Available columns: {df.columns.tolist()}")
         return None
 
 def main():
