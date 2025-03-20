@@ -171,9 +171,9 @@ def show_login():
             </div>
         """, unsafe_allow_html=True)
         
-        password = st.text_input("Enter Password", type="password", label_visibility="collapsed", placeholder="Enter Password")
+        password = st.text_input("Enter Password", type="password", label_visibility="collapsed", placeholder="Enter Password", key="password_input")
         
-        if st.button("Login", use_container_width=True):
+        if st.button("Login", use_container_width=True) or password:
             if authenticate(password):
                 st.success("Login successful! Please wait...")
                 st.rerun()
