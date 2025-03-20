@@ -153,11 +153,11 @@ def show_main_content():
                 Use the sidebar to navigate between different views:
             </p>
             <div class="feature-list">
-                <div class="feature-item">📊 <strong>Raw Overview</strong> - View raw energy consumption data</div>
+                <div class="feature-item">📊 <strong>Data Overview</strong> - View raw energy consumption data</div>
                 <div class="feature-item">📅 <strong>Intra-Week Consumption</strong> - Analyze consumption patterns within weeks</div>
                 <div class="feature-item">⚡ <strong>Reactive Energy Usage</strong> - Monitor reactive energy consumption</div>
                 <div class="feature-item">📈 <strong>Reactive Energy %age Usage</strong> - Track reactive energy percentage metrics</div>
-                <div class="feature-item">🔮 <strong>EA Forecasts</strong> - View energy consumption forecasts and predictions</div>
+                <div class="feature-item">🔮 <strong>Forecasts</strong> - View energy consumption forecasts and predictions</div>
             </div>
         </div>
     """, unsafe_allow_html=True)

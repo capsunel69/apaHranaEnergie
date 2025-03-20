@@ -111,7 +111,6 @@ with st.spinner('Loading and processing data...'):
         height=600,
         xaxis_title="Day of Week",
         yaxis_title="Energy Consumption (kWh)",
-        hovermode='x unified',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         margin=dict(l=50, r=20, t=80, b=20),
@@ -126,13 +125,7 @@ with st.spinner('Loading and processing data...'):
             borderwidth=1,
             font=dict(size=8)
         ),
-        showlegend=True,
-        xaxis=dict(
-            rangeslider=dict(
-                visible=True,
-                yaxis=dict(rangemode="auto")
-            )
-        )
+        showlegend=True
     )
 
     # Update axes

@@ -18,7 +18,7 @@ if 'authenticated' not in st.session_state or not st.session_state.authenticated
 
 # Create placeholder for the title
 title_placeholder = st.empty()
-title_placeholder.title("Raw Overview")
+title_placeholder.title("Data Overview")
 
 # Create placeholder for the main content
 main_placeholder = st.empty()

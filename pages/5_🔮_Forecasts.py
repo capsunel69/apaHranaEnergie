@@ -8,7 +8,7 @@ from energy_dashboard.utils import update_plot_style, load_forecast_data, load_d
 # Set page config (matching the main dashboard style)
 st.set_page_config(
     layout="wide",
-    page_title="EA Forecasts",
+    page_title="Forecasts",
     initial_sidebar_state="expanded",
     page_icon="📈"
 )
@@ -56,27 +56,26 @@ def create_forecast_plot(df, station):
             )
         )
 
-        # Add upper bound
+        # Add confidence interval (shaded area only)
         fig.add_trace(
             go.Scatter(
                 x=df.index,
                 y=df[(station_name, 'yhat_upper')],
-                name='ŷ upper',
-                line=dict(color='red'),
-                mode='lines'
+                name='Confidence Interval',
+                line=dict(color='rgba(0,0,0,0)'),  # Invisible line
+                showlegend=False
             )
         )
 
-        # Add lower bound
         fig.add_trace(
             go.Scatter(
                 x=df.index,
                 y=df[(station_name, 'yhat_lower')],
-                name='ŷ lower',
-                line=dict(color='green'),
-                mode='lines',
-                fill='tonexty',  # Fill between lower and upper bounds
-                fillcolor='rgba(68, 68, 68, 0.1)'
+                name='Confidence Interval',
+                line=dict(color='rgba(0,0,0,0)'),  # Invisible line
+                fill='tonexty',  # Fill between this trace and the previous one
+                fillcolor='rgba(68, 68, 68, 0.1)',
+                showlegend=True
             )
         )
 
@@ -150,8 +149,8 @@ def main():
     st.markdown("""
     ### About this forecast
     - Blue line shows historical values (EA)
-    - Green, Orange and Red dashed lines shows the forecast (ŷ)
-    - Shaded area represents the confidence interval (lower and upper bounds)
+    - Orange line shows the forecast (ŷ)
+    - Shaded area represents the confidence interval
     """)
 
 if __name__ == "__main__":

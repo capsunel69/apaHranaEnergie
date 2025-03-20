@@ -8,7 +8,7 @@ from energy_dashboard.utils import load_data, update_plot_style, COLORS
 # Set page config
 st.set_page_config(
     layout="wide",
-    page_title="Reactive Energy",
+    page_title="Energy Analysis",
     initial_sidebar_state="expanded",
     page_icon="⚡"
 )
@@ -17,8 +17,6 @@ st.set_page_config(
 if 'authenticated' not in st.session_state or not st.session_state.authenticated:
     st.error("Please log in from the home page to access this content.")
     st.stop()
-
-st.title("Energy Analysis")
 
 # Load data outside spinner to make it available for the whole session
 @st.cache_data
@@ -294,25 +292,26 @@ with st.spinner('Loading and processing data...'):
 
     fig2 = update_plot_style(fig2)
 
-    # Add time range selector
-    date_range = st.date_input(
+    # Replace date_input with slider
+    min_date = pd.Timestamp(df.index.min().normalize().date())  # normalize() sets time to midnight
+    max_date = pd.Timestamp(df.index.max().normalize().date())
+    date_range = st.select_slider(
         "Select Date Range",
-        value=(df.index.min(), df.index.max()),
-        min_value=df.index.min(),
-        max_value=df.index.max()
+        options=[d.strftime('%Y-%m-%d') for d in pd.date_range(min_date, max_date, freq='D')],
+        value=(min_date.strftime('%Y-%m-%d'), max_date.strftime('%Y-%m-%d'))
     )
 
     # Update both figures with the same x-axis range
     if len(date_range) == 2:  # Only update when both dates are selected
         fig1.update_layout(
             xaxis=dict(
-                range=[str(date_range[0]), str(date_range[1])]
+                range=[f"{date_range[0]} 00:00:00", f"{date_range[1]} 23:59:59"]
             )
         )
 
         fig2.update_layout(
             xaxis=dict(
-                range=[str(date_range[0]), str(date_range[1])]
+                range=[f"{date_range[0]} 00:00:00", f"{date_range[1]} 23:59:59"]
             )
         )
 
