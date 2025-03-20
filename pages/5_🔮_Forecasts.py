@@ -112,7 +112,6 @@ def create_forecast_plot(df, station):
                 )
             ),
             xaxis=dict(
-                rangeslider=dict(visible=True),
                 type="date"
             )
         )

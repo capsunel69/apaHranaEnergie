@@ -62,10 +62,6 @@ with st.spinner('Loading and processing data...'):
             x=0.01
         ),
         xaxis=dict(
-            rangeslider=dict(
-                visible=True,
-                yaxis=dict(rangemode="auto")
-            ),
             type="date"
         )
     )
@@ -296,7 +292,6 @@ with st.spinner('Loading and processing data...'):
             title_text="Data Series"
         ),
         xaxis=dict(
-            rangeslider=dict(visible=True),
             type="date"
         )
     )
