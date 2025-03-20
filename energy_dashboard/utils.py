@@ -92,7 +92,13 @@ def update_plot_style(fig, color_map=COLORS):
 
 @st.cache_data
 def load_data():
-    data_path = 'tetarom_clean_merged_data.feather'
+    data_path = 'data/tetarom_clean_merged_data.feather'
     tetarom_df = pd.read_feather(data_path)
     tetarom_df.columns = tetarom_df.columns.map(strip_unit_tup)
     return tetarom_df 
+
+@st.cache_data
+def load_forecast_data():
+    data_path = 'data/tetarom_ea_forecasts.feather'
+    forecast_df = pd.read_feather(data_path)
+    return forecast_df 

@@ -159,7 +159,7 @@ def show_main_content():
 
 # Login form
 def show_login():
-    col1, col2, col3 = st.columns([1, 0.5, 1])
+    col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         st.markdown("""
             <div class="login-container">
