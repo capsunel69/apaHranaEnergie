@@ -37,17 +37,22 @@ with st.spinner('Loading and processing data...'):
     # Prepare all the data and create the figure
     with main_placeholder.container():
         # Controls in a container above the plot
-        resample_period = st.segmented_control(
-            "Aggregation Period",
-            options=["Day (6H)", "Week", "Month"],
-            default="Day (6H)"
-        )
+
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            resample_period = st.segmented_control(
+                "Aggregation Period",
+                options=["6-hours", "Day", "Week", "Month"],
+                default="6-hours",
+                label_visibility="hidden"
+            )
 
         # Apply resampling
         resampled_df = resample_data(flat_df, resample_period)
 
         # Add unit selection
-        with st.container():
+        with col2:
             unit = st.segmented_control(
                 "Unit",
                 options=["kWh", "MWh"],
