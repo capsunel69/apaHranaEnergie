@@ -36,9 +36,6 @@ with st.container():
 
 # Add loading indicator
 with st.spinner('Loading and processing data...'):
-    import time
-    time.sleep(0.5)  # Add a small delay to ensure spinner is visible
-    
     # Load data
     tetarom_df = load_data()
     

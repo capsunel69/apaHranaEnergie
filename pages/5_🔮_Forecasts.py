@@ -112,7 +112,6 @@ def create_forecast_plot(df, station):
                 )
             ),
             xaxis=dict(
-                rangeslider=dict(visible=True),
                 type="date"
             )
         )
@@ -135,10 +134,11 @@ def main():
     df = load_forecast_data()
     
     # Updated station selector with direct station names
-    station = st.selectbox(
+    station = st.segmented_control(
         "Select Station",
         options=['Statia Jucu 1', 'Statia Jucu 2', 'All'],
-        index=0
+        default='Statia Jucu 1',
+        label_visibility='hidden'
     )
     
     # Create and display the forecast plot
@@ -147,10 +147,17 @@ def main():
 
     # Add some explanatory text
     st.markdown("""
-    ### About this forecast
-    - Blue line shows historical values (EA)
-    - Orange line shows the forecast (ŷ)
-    - Shaded area represents the confidence interval
+### The model
+
+$\\hat{y}(t) = g(t) + s(t) + h(t) + \\epsilon_t$
+
+We use a decomposable time series model with three main model components:  
+- $g(t)$ is the logistic trend function which models non-periodic changes in the value of the time series.
+- $s(t)$ fourier-based seasonality which models periodic changes (daily, weekly, yearly).
+- $h(t)$ represents the effects of holidays which occur on potentially irregular schedules over
+one or more days.
+    - *Not done yet. Pending custom holiday schedule*.
+- $\\epsilon_t$ represents any idiosyncratic changes which are not accommodated by the model.
     """)
 
 if __name__ == "__main__":

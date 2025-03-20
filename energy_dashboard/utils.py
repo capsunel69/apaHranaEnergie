@@ -23,12 +23,16 @@ def strip_unit_tup(x):
     return (a, b)
 
 def resample_data(df, period):
-    if period == "Day" or period == "Day (6H)":
-        return df.resample('6H').sum()
+    if period == "Day (6H)" or period == "6-hours":
+        return df.resample('6h').sum()
+    elif period == "Day":
+        return df.resample('d').sum()
     elif period == "Week":
         return df.resample('W').sum()
-    else:  # Month
-        return df.resample('M').sum()
+    elif period == "Month":
+        return df.resample('ME').sum()
+    else:
+        raise ValueError(f"Invalid period: {period}")
 
 def update_plot_style(fig, color_map=COLORS):
     # Check if dark mode is enabled by checking the background color
