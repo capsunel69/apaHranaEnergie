@@ -53,7 +53,6 @@ with st.spinner('Loading and processing data...'):
         height=500,
         xaxis_title="Time",
         yaxis_title="Energy",
-        hovermode='x unified',
         legend=dict(
             yanchor="top",
             y=0.99,
@@ -158,21 +157,6 @@ with st.spinner('Loading and processing data...'):
         erp_dates.append(current_dates)
         erp_colors.append('red' if current_segment[-1] > limit_x1 else COLORS['ER+'])
 
-    # Add traces for ER+
-    for segment, dates, color in zip(erp_segments, erp_dates, erp_colors):
-        fig2.add_trace(
-            go.Scatter(
-                x=dates,
-                y=segment,
-                name="ER+ %age",
-                line=dict(width=2, color=color),
-                mode='lines',
-                showlegend=(color == COLORS['ER+']),
-                connectgaps=False
-            ),
-            secondary_y=False
-        )
-
     # ER- line with color segments (similar logic)
     ern_segments = []
     ern_dates = []
@@ -221,7 +205,27 @@ with st.spinner('Loading and processing data...'):
         ern_dates.append(current_dates)
         ern_colors.append('red' if current_segment[-1] > limit_x1 else COLORS['ER-'])
 
+    # Add traces for ER+
+    first_erp = True  # Track first ER+ segment
+    for segment, dates, color in zip(erp_segments, erp_dates, erp_colors):
+        fig2.add_trace(
+            go.Scatter(
+                x=dates,
+                y=segment,
+                name="ER+ %age",
+                line=dict(width=2, color=color),
+                mode='lines',
+                showlegend=first_erp,  # Show legend only for first segment
+                connectgaps=False,
+                hovertemplate="<b>Time</b>: %{x}<br>" +
+                            "<b>ER+ %age</b>: %{y:.4f}<br><extra></extra>"
+            ),
+            secondary_y=False
+        )
+        first_erp = False
+
     # Add traces for ER-
+    first_ern = True  # Track first ER- segment
     for segment, dates, color in zip(ern_segments, ern_dates, ern_colors):
         fig2.add_trace(
             go.Scatter(
@@ -230,17 +234,26 @@ with st.spinner('Loading and processing data...'):
                 name="ER- %age",
                 line=dict(width=2, color=color),
                 mode='lines',
-                showlegend=(color == COLORS['ER-']),
-                connectgaps=False
+                showlegend=first_ern,  # Show legend only for first segment
+                connectgaps=False,
+                hovertemplate="<b>Time</b>: %{x}<br>" +
+                            "<b>ER- %age</b>: %{y:.4f}<br><extra></extra>"
             ),
             secondary_y=False
         )
+        first_ern = False
 
-    # Add EA trace
+    # Add EA trace with hover template
     fig2.add_trace(
-        go.Scatter(x=erpc.index, y=erpc['EA'], name="EA", 
-                   line=dict(color=COLORS['EA'], width=1), 
-                   opacity=0.1),
+        go.Scatter(
+            x=erpc.index, 
+            y=erpc['EA'], 
+            name="EA", 
+            line=dict(color=COLORS['EA'], width=1), 
+            opacity=0.1,
+            hovertemplate="<b>Time</b>: %{x}<br>" +
+                         "<b>EA</b>: %{y:.4f}<br><extra></extra>"
+        ),
         secondary_y=True
     )
 
@@ -272,7 +285,6 @@ with st.spinner('Loading and processing data...'):
 
     fig2.update_layout(
         height=500,
-        hovermode='x unified',
         title=f"{station} Reactive Energy %age Usage",
         legend=dict(
             yanchor="top",
