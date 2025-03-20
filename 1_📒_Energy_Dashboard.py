@@ -138,7 +138,7 @@ def show_main_content():
     tetarom_df = load_data()
 
     # Main page title with icon
-    st.title("⚡ Energy Consumption Dashboard")
+    st.title("⚡ Consumption Dashboard")
 
     if tetarom_df.empty:
         st.warning("No data available. Please check if the data files are present in the 'data' directory.")
@@ -147,14 +147,12 @@ def show_main_content():
     # Welcome message in a card-like container
     st.markdown("""
         <div class="welcome-container">
-            <h2 style="color: #1E3D59; margin-bottom: 1rem;">Welcome to the Energy Dashboard</h2>
             <p style="color: #2C3E50; font-size: 1.1rem; margin-bottom: 1.5rem;">
-                Monitor and analyze your energy consumption patterns with our interactive dashboard.
-                Use the sidebar to navigate between different views:
+                👈 Use the sidebar  navigate between different views.
             </p>
             <div class="feature-list">
-                <div class="feature-item">📊 <strong>Data Overview</strong> - View raw energy consumption data</div>
-                <div class="feature-item">📅 <strong>Intra-Week Consumption</strong> - Analyze consumption patterns within weeks</div>
+                <div class="feature-item">📊 <strong>Data Overview</strong> - Raw energy consumption data</div>
+                <div class="feature-item">📅 <strong>Intra-Week Consumption</strong> - Analyze consumption patterns</div>
                 <div class="feature-item">⚡ <strong>Reactive Energy Usage</strong> - Monitor reactive energy consumption</div>
                 <div class="feature-item">📈 <strong>Reactive Energy %age Usage</strong> - Track reactive energy percentage metrics</div>
                 <div class="feature-item">🔮 <strong>Forecasts</strong> - View energy consumption forecasts and predictions</div>

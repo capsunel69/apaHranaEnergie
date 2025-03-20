@@ -49,6 +49,7 @@ with st.spinner('Loading and processing data...'):
             )
 
         # Apply resampling
+
         resampled_df = resample_data(flat_df, resample_period)
 
         # Add unit selection

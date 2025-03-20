@@ -29,11 +29,14 @@ tetarom_df = get_data()
 limit_x1 = 0.4843  # 48.43%
 limit_x3 = 1.1691  # 116.91%
 
+st.header("Reactive Energy Usage")
+
 # Station selector (single one for both plots)
 station = st.segmented_control(
     "Select Station",
     options=tetarom_df.columns.get_level_values('location').unique(),
-    default=tetarom_df.columns.get_level_values('location').unique()[0]  # Set default to first station
+    default=tetarom_df.columns.get_level_values('location').unique()[0],  # Set default to first station
+    label_visibility='hidden'
 )
 
 # Wrap the data processing and visualization in the spinner
@@ -44,7 +47,6 @@ with st.spinner('Loading and processing data...'):
     df = df[['EA', 'ER+', 'ER-']]
 
     # First plot - Reactive Energy Usage
-    st.header("Reactive Energy Usage")
     fig1 = px.line(df,
                    title=f"{station} Energy Usage",
                    template="plotly_white")
@@ -310,7 +312,8 @@ with st.spinner('Loading and processing data...'):
     date_range = st.select_slider(
         "Select Date Range",
         options=[d.strftime('%Y-%m-%d') for d in pd.date_range(min_date, max_date, freq='D')],
-        value=(min_date.strftime('%Y-%m-%d'), max_date.strftime('%Y-%m-%d'))
+        value=(min_date.strftime('%Y-%m-%d'), max_date.strftime('%Y-%m-%d')),
+        label_visibility='hidden'
     )
 
     # Update both figures with the same x-axis range
